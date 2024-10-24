@@ -7,13 +7,17 @@ public class PlayerMovement : MonoBehaviour
     public CharacterController controller;
 
     [Header("Movement Variables")]
-    [SerializeField] float Speed;
-    [SerializeField] float WalkSpeed = 13f;
-    [SerializeField] float JumpHeight = 3f;
-    [SerializeField] float gravity;
+    public float Speed;
+    public float WalkSpeed = 13f;
+    public float JumpHeight = 3f;
+    public float gravity;
     public float normGravity = -9.81f * 2;
     public float floatGravity = -2f * 2;
     public float rotationSpeed;
+    public float jumpGrace;
+
+    private float? lastGroundedTime;
+    private float? jumpButtonPressedTime;
 
     [Header("BoolCheckers")]
     public bool IsMoving = false;
@@ -103,12 +107,29 @@ public class PlayerMovement : MonoBehaviour
             velocity.y = -2f;
         }
 
+        if (isGrounded)
+        {
+            lastGroundedTime = Time.time;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            jumpButtonPressedTime = Time.time;
+        }
+
         //check if the player is on the ground so he can jump
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        if (Input.GetKeyDown(KeyCode.Space) && (Time.time - lastGroundedTime <= jumpGrace))
         {
             //the equation for jumping
             velocity.y = Mathf.Sqrt(JumpHeight * -2f * gravity);
-            gravity = normGravity;
+
+            if (Time.time - jumpButtonPressedTime <= jumpGrace)
+            {
+                gravity = normGravity;
+                jumpButtonPressedTime = null;
+                lastGroundedTime = null;
+            }
+            
         }
         if (Input.GetKeyDown(KeyCode.Space) && !isGrounded )
         {

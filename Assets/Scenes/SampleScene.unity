@@ -922,12 +922,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   controller: {fileID: 968779848}
   Speed: 0
-  WalkSpeed: 10
+  WalkSpeed: 7
   JumpHeight: 5
   gravity: 0
   normGravity: -19.62
-  floatGravity: -4
+  floatGravity: -8
   rotationSpeed: 720
+  jumpGrace: 0.1
   IsMoving: 0
   groundCheck: {fileID: 1165144743}
   groundDistance: 0.4
