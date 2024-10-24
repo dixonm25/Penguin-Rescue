@@ -110,11 +110,15 @@ public class PlayerMovement : MonoBehaviour
             velocity.y = Mathf.Sqrt(JumpHeight * -2f * gravity);
             gravity = normGravity;
         }
-        if (Input.GetKeyDown(KeyCode.Space) && !isGrounded && velocity.y < 0)
+        if (Input.GetKeyDown(KeyCode.Space) && !isGrounded )
         {
             gravity = floatGravity;
         }
-        else if (isGrounded)
+        if (Input.GetKeyUp(KeyCode.Space) && !isGrounded)
+        {
+            gravity = normGravity;
+        }
+        if (isGrounded)
         {
             gravity = normGravity;
         }
