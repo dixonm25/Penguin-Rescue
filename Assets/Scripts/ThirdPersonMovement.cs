@@ -1,18 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class PlayerMovement : MonoBehaviour
+public class ThirdPersonMovement : MonoBehaviour
 {
     public CharacterController controller;
 
     [Header("Movement Variables")]
     public float Speed;
-    public float WalkSpeed = 7f;
-    public float JumpHeight = 5f;
+    public float WalkSpeed = 13f;
+    public float JumpHeight = 3f;
     public float gravity;
     public float normGravity = -9.81f * 2;
-    public float floatGravity = -4f * 2;
+    public float floatGravity = -2f * 2;
     public float jumpGrace;
 
     private float? lastGroundedTime;
@@ -32,11 +31,6 @@ public class PlayerMovement : MonoBehaviour
     public Transform cam;
     public float turnSmoothTime = 0.1f;
     float turnSmoothVelocity;
-
-    void Start()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
-    }
     // Update is called once per frame
     void Update()
     {
@@ -140,4 +134,3 @@ public class PlayerMovement : MonoBehaviour
         controller.Move(velocity * Time.deltaTime);
     }
 }
-
