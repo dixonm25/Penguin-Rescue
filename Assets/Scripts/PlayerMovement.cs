@@ -7,8 +7,7 @@ public class PlayerMovement : MonoBehaviour
     public CharacterController controller;
 
     [Header("Movement Variables")]
-    public float Speed;
-    public float WalkSpeed = 7f;
+    public float Speed = 7f;
     public float JumpHeight = 5f;
     public float gravity;
     public float normGravity = -9.81f * 2;
@@ -46,33 +45,8 @@ public class PlayerMovement : MonoBehaviour
 
     void Movement()
     {
-        IsMoving = (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D) || Input.GetKeyDown(KeyCode.Space));
-
-        float horizontalInput = 0f;
-        float verticalInput = 0f;
-
-        if (Input.GetKey(KeyCode.W))
-        {
-            verticalInput = 1f;
-        }
-        else if (Input.GetKey(KeyCode.S))
-        {
-            verticalInput = -1f;
-        }
-
-        if (Input.GetKey(KeyCode.D))
-        {
-            horizontalInput = 1f;
-        }
-        else if (Input.GetKey(KeyCode.A))
-        {
-            horizontalInput = -1f;
-        }
-
-        if (IsMoving)
-        {
-            Speed = WalkSpeed;
-        }
+        float horizontalInput = Input.GetAxisRaw("Horizontal");
+        float verticalInput = Input.GetAxisRaw("Vertical");
 
         UnityEngine.Vector3 direction = new UnityEngine.Vector3(horizontalInput, 0f, verticalInput).normalized;
         if (direction.magnitude >= 0.1f)
@@ -102,13 +76,13 @@ public class PlayerMovement : MonoBehaviour
             lastGroundedTime = Time.time;
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetButtonDown("Jump"))
         {
             jumpButtonPressedTime = Time.time;
         }
 
         //check if the player is on the ground so he can jump
-        if (Input.GetKeyDown(KeyCode.Space) && (Time.time - lastGroundedTime <= jumpGrace))
+        if (Input.GetButtonDown("Jump") && (Time.time - lastGroundedTime <= jumpGrace))
         {
             //the equation for jumping
             velocity.y = Mathf.Sqrt(JumpHeight * -2f * gravity);
@@ -121,11 +95,11 @@ public class PlayerMovement : MonoBehaviour
             }
 
         }
-        if (Input.GetKeyDown(KeyCode.Space) && !isGrounded)
+        if (Input.GetButtonDown("Jump") && !isGrounded)
         {
             gravity = floatGravity;
         }
-        if (Input.GetKeyUp(KeyCode.Space) && !isGrounded)
+        if (Input.GetButtonUp("Jump") && !isGrounded)
         {
             gravity = normGravity;
         }
