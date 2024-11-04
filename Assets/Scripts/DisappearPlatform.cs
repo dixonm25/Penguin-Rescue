@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FallingPlatform : MonoBehaviour
+public class DisappearPlatform : MonoBehaviour
 {
-    public float hideDelay = 1f;
-    public float showDelay = 2f;
+    [SerializeField] float hideDelay = 1f;
+    [SerializeField] float showDelay = 2f;
 
     void OnTriggerEnter(Collider collider) 
     {

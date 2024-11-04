@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
@@ -8,18 +9,21 @@ public class PlayerMovement : MonoBehaviour
     public CharacterController controller;
 
     [Header("Movement Variables")]
-    public float Speed = 7f;
-    public float JumpHeight = 5f;
-    public float gravity;
-    public float normGravity = -9.81f * 2;
-    public float floatGravity = -4f * 2;
-    public float jumpGrace;
+    [SerializeField] float Speed = 0f;
+    [SerializeField] float walkSpeed = 7f;
+    [SerializeField] float crouchSpeed = 3.5f;
+    [SerializeField] float JumpHeight = 5f;
+    [SerializeField] float gravity;
+    [SerializeField] float normGravity = -9.81f * 2;
+    [SerializeField] float floatGravity = -4f * 2;
+    [SerializeField] float jumpGrace;
 
     private float? lastGroundedTime;
     private float? jumpButtonPressedTime;
 
     [Header("BoolCheckers")]
     public bool IsMoving = false;
+    public bool IsCrouching = false;
 
     public Transform groundCheck;
     public float groundDistance = 0.4f;
@@ -42,10 +46,20 @@ public class PlayerMovement : MonoBehaviour
     {
         Movement();
         JumpAndGravity();
+        CrouchToggled();
     }
 
     void Movement()
     {
+        if (IsCrouching)
+        {
+            Speed = crouchSpeed;
+        }
+        else
+        {
+            Speed = walkSpeed;
+        }
+
         float horizontalInput = Input.GetAxisRaw("Horizontal");
         float verticalInput = Input.GetAxisRaw("Vertical");
 
@@ -113,6 +127,23 @@ public class PlayerMovement : MonoBehaviour
         velocity.y += gravity * Time.deltaTime;
 
         controller.Move(velocity * Time.deltaTime);
+    }
+
+    void CrouchToggled()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftControl))
+        {
+            IsCrouching =  true;
+
+            controller.height = 1f;
+        }
+
+        if (Input.GetKeyUp(KeyCode.LeftControl))
+        {
+            IsCrouching = false;
+
+            controller.height = 1.9f;
+        }
     }
 }
 
