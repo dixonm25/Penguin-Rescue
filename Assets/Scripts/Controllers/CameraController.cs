@@ -7,13 +7,28 @@ public class CameraController : MonoBehaviour
 
     [SerializeField] PlayerInput _input;
 
+    [SerializeField] float _cameraZoomModifier = 32.0f;
+
+    float _minCameraZoomDistance = 1.0f;
+    float _minOrbitCameraZoomDistance = 1.0f;
+    float _maxCameraZoomDistance = 12.0f;
+    float _maxOrbitCameraZoomDistance = 36.0f;
+
     CinemachineVirtualCamera _activeCamera;
     int _activeCameraPriorityModifier = 31337;
 
     public Camera MainCamera;
     public CinemachineVirtualCamera cinemachine1stPerson;
     public CinemachineVirtualCamera cinemachine3rdPerson;
+    CinemachineFramingTransposer _cinemachineFramingTransposer3rdPerson;
     public CinemachineVirtualCamera cinemachineOrbit;
+    CinemachineFramingTransposer _cinemachineFramingTransposerOrbit;
+
+    private void Awake()
+    {
+        _cinemachineFramingTransposer3rdPerson = cinemachine3rdPerson.GetCinemachineComponent<CinemachineFramingTransposer>();
+        _cinemachineFramingTransposerOrbit = cinemachineOrbit.GetCinemachineComponent<CinemachineFramingTransposer>();
+    }
 
     private void Start()
     {
@@ -22,9 +37,25 @@ public class CameraController : MonoBehaviour
 
     private void Update()
     {
+        if (!(_input.ZoomCameraInput == 0.0f))
+        {
+            ZoomCamera();
+        }
         if (_input.ChangeCameraWasPressedThisFrame)
         {
             ChangeCamera();
+        }
+    }
+
+    private void ZoomCamera()
+    {
+        if (_activeCamera == cinemachine3rdPerson)
+        {
+            _cinemachineFramingTransposer3rdPerson.m_CameraDistance = Mathf.Clamp(_cinemachineFramingTransposer3rdPerson.m_CameraDistance + (_input.InvertScroll ? _input.ZoomCameraInput : -_input.ZoomCameraInput) / _cameraZoomModifier, _minCameraZoomDistance, _maxCameraZoomDistance);
+        }
+        else if (_activeCamera == cinemachineOrbit)
+        {
+            _cinemachineFramingTransposerOrbit.m_CameraDistance = Mathf.Clamp(_cinemachineFramingTransposerOrbit.m_CameraDistance + (_input.InvertScroll ? _input.ZoomCameraInput : -_input.ZoomCameraInput) / _cameraZoomModifier, _minOrbitCameraZoomDistance, _maxOrbitCameraZoomDistance);
         }
     }
     
