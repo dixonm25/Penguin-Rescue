@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
-public class PlayerMovement : MonoBehaviour
+public class Player : MonoBehaviour
 {
     public CharacterController controller;
 
@@ -29,9 +29,14 @@ public class PlayerMovement : MonoBehaviour
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
 
+    public Transform ceilingCheck;
+    public float ceilingDistance = 0.4f;
+    public LayerMask ceilingMask;
+
     Vector3 velocity;
 
     bool isGrounded;
+    bool isCeiling;
 
     public Transform cam;
     public float turnSmoothTime = 0.1f;
@@ -94,6 +99,7 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetButtonDown("Jump"))
         {
             jumpButtonPressedTime = Time.time;
+            IsCrouching = false;
         }
 
         //check if the player is on the ground so he can jump
@@ -131,14 +137,16 @@ public class PlayerMovement : MonoBehaviour
 
     void CrouchToggled()
     {
-        if (Input.GetKeyDown(KeyCode.LeftControl))
+        isCeiling = Physics.CheckSphere(ceilingCheck.position, ceilingDistance, ceilingMask);
+
+        if (Input.GetKeyDown(KeyCode.LeftControl) && !isCeiling)
         {
             IsCrouching =  true;
 
             controller.height = 1f;
         }
 
-        if (Input.GetKeyUp(KeyCode.LeftControl))
+        if (Input.GetKeyUp(KeyCode.LeftControl) && !isCeiling)
         {
             IsCrouching = false;
 
