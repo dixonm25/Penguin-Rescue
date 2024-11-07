@@ -12,11 +12,11 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody _rigidbody = null;
     CapsuleCollider _capsuleCollider = null;
 
-    Vector3 _playerMoveInput = Vector3.zero;
+    [SerializeField] Vector3 _playerMoveInput = Vector3.zero;
 
     Vector3 _playerLookInput = Vector3.zero;
     Vector3 _previousPlayerLookInput = Vector3.zero;
-    float _cameraPitch = 0.0f;
+    [SerializeField]float _cameraPitch = 0.0f;
     [SerializeField] float _playerLookInputLerpTime = 0.35f;
 
     [Header("Movement")]
@@ -29,21 +29,37 @@ public class PlayerMovement : MonoBehaviour
     [Header("Ground Check")]
     [SerializeField] bool _playerIsGrounded = true;
     [SerializeField] [Range(0.0f, 1.8f)] float _groundCheckRadiusMultiplier = 0.9f;
-    [SerializeField] [Range(-0.95f, 1.05f)] float _groundCheckDistance = 0.05f;
+    [SerializeField] [Range(-0.95f, 1.05f)] float _groundCheckDistanceTolerance = 0.05f;
+    [SerializeField] float _playerCenterToGroundDistance = 0.0f;
     RaycastHit _groundCheckHit = new RaycastHit();
 
     [Header("Gravity")]
-    [SerializeField] float _gravityFallCurrent = -100.0f;
-    [SerializeField] float _gravityFallMin = -100.0f;
-    [SerializeField] float _gravityFallMax = -500.0f;
-    [SerializeField] [Range(-5.0f, -35.0f)] float _gravityFallIncrementAmount = -20.0f;
+    [SerializeField] float _gravityFallCurrent = 0.0f;
+    [SerializeField] float _gravityFallMin = 0.0f;
     [SerializeField] float _gravityFallIncrementTime = 0.05f;
     [SerializeField] float _playerFallTimer = 0.0f;
     [SerializeField] float _gravityGrounded = -1.0f;
     [SerializeField] float _maxSlopeAngle = 47.5f;
 
+    [Header("Stairs")]
+    [SerializeField] [Range(0.0f, 1.0f)] float _maxStepHeight = 0.5f;
+    [SerializeField] [Range(0.0f, 1.0f)] float _minStepDepth = 0.3f;
+    [SerializeField] float _stairHeightPaddingMultiplier = 1.5f;
+    [SerializeField] bool _isFirstStep = true;
+    [SerializeField] float _firstStepVelocityDistanceMultiplier = 0.1f;
+    [SerializeField] bool _playerIsAscendingStairs = false;
+    [SerializeField] bool _playerIsDescendingStairs = false;
+    [SerializeField] float _ascendingStairsMovementMultiplier = 0.35f;
+    [SerializeField] float _descendingStairsMovementMultiplier = 0.7f;
+    [SerializeField] float _maximumAngleOfApproachToAscend = 45.0f;
+    float _playerHalfHeightToGround = 0.0f;
+    float _maxAscendRayDistance = 0.0f; // This gets calculated in Awake() and is based off _maxStepHeight and a max approach angle of _maximumAngleOfApproach
+    float _maxDescendRayDistance = 0.0f; // This get calculated in Awake() and is based off _maxStepHeight and a max departure angle of 80 degrees
+    int _numberOfStepDetectRays = 0;
+    float _rayIncrementAmount = 0.0f;
+
     [Header("Jumping")]
-    [SerializeField] float _initialJumpForce = 750.0f;
+    [SerializeField] float _initialJumpForceMultiplier = 750.0f;
     [SerializeField] float _continualJumpForceMultiplier = 0.1f;
     [SerializeField] float _jumpTime = 0.175f;
     [SerializeField] float _jumpTimeCounter = 0.0f;
@@ -58,6 +74,12 @@ public class PlayerMovement : MonoBehaviour
     {
         _rigidbody = GetComponent<Rigidbody>();
         _capsuleCollider = GetComponent<CapsuleCollider>();
+
+        _maxAscendRayDistance = _maxStepHeight / Mathf.Cos(_maximumAngleOfApproachToAscend * Mathf.Deg2Rad);
+        _maxDescendRayDistance = _maxStepHeight / Mathf.Cos(80.0f * Mathf.Deg2Rad);
+
+        _numberOfStepDetectRays = Mathf.RoundToInt(((_maxStepHeight * 100.0f) * 0.5f) + 1.0f);
+        _rayIncrementAmount = _maxStepHeight / _numberOfStepDetectRays;
     }
 
     private void FixedUpdate()
@@ -73,11 +95,14 @@ public class PlayerMovement : MonoBehaviour
         _playerIsGrounded = PlayerGroundCheck();
 
         _playerMoveInput = PlayerMove();
+        _playerMoveInput = PlayerStairs();
         _playerMoveInput = PlayerSlope();
         _playerMoveInput = PlayerRun();
 
         _playerMoveInput.y = PlayerFallGravity();
         _playerMoveInput.y = PlayerJump();
+
+        Debug.DrawRay(_rigidbody.position, _rigidbody.transform.TransformDirection(_playerMoveInput), Color.red, 0.5f);
 
         _playerMoveInput *= _rigidbody.mass; // NOTE: for dev purposes - ep10
         
@@ -110,23 +135,197 @@ public class PlayerMovement : MonoBehaviour
         return new Vector3(_input.MoveInput.x, 0.0f, _input.MoveInput.y);
     }
 
+    private Vector3 PlayerMove()
+    {
+        return ((_playerIsGrounded) ? (_playerMoveInput * _movementMultiplier) : (_playerMoveInput * _movementMultiplier * _notGroundedMovementMultiplier));
+    }
+
     private bool PlayerGroundCheck()
     {
         float sphereCastRadius = _capsuleCollider.radius * _groundCheckRadiusMultiplier;
-        float sphereCastTravelDistance = _capsuleCollider.bounds.extents.y - sphereCastRadius + _groundCheckDistance;
-        return Physics.SphereCast(_rigidbody.position, sphereCastRadius, Vector3.down, out _groundCheckHit, sphereCastTravelDistance);
+        Physics.SphereCast(_rigidbody.position, sphereCastRadius, Vector3.down, out _groundCheckHit);
+        _playerCenterToGroundDistance = _groundCheckHit.distance + sphereCastRadius;
+        return ((_playerCenterToGroundDistance >= _capsuleCollider.bounds.extents.y - _groundCheckDistanceTolerance) && 
+                (_playerCenterToGroundDistance <= _capsuleCollider.bounds.extents.y + _groundCheckDistanceTolerance));
     }
 
-    private Vector3 PlayerMove()
+    private Vector3 PlayerStairs()
     {
-        return ((_playerIsGrounded) ? (_playerMoveInput * _movementMultiplier)  : (_playerMoveInput * _movementMultiplier * _notGroundedMovementMultiplier));
+        Vector3 calculatedStepInput = _playerMoveInput;
+
+        _playerHalfHeightToGround = _capsuleCollider.bounds.extents.y;
+        if (_playerCenterToGroundDistance < _capsuleCollider.bounds.extents.y)
+        {
+            _playerHalfHeightToGround = _playerCenterToGroundDistance;
+        }
+
+        calculatedStepInput = AscendStairs(calculatedStepInput);
+        if (!(_playerIsAscendingStairs))
+        {
+            calculatedStepInput = DescendStairs(calculatedStepInput);
+        }
+        return calculatedStepInput;
+    }
+
+    private Vector3 AscendStairs(Vector3 calculatedStepInput)
+    {
+        if (_input.MoveIsPressed)
+        {
+            float calculatedVelDistance = _isFirstStep ? (_rigidbody.velocity.magnitude * _firstStepVelocityDistanceMultiplier) + _capsuleCollider.radius : _capsuleCollider.radius;
+
+            float ray = 0.0f;
+            List<RaycastHit> raysThatHit = new List<RaycastHit>();
+            for (int x = 1;
+                x <= _numberOfStepDetectRays; 
+                x++, ray += _rayIncrementAmount) 
+            {
+                Vector3 rayLower = new Vector3(_rigidbody.position.x,((_rigidbody.position.y - _playerHalfHeightToGround) + ray), _rigidbody.position.z);
+                RaycastHit hitLower;
+                if (Physics.Raycast(rayLower, _rigidbody.transform.TransformDirection(_playerMoveInput), out hitLower, calculatedVelDistance + _maxAscendRayDistance))
+                {
+                    float stairSlopAngle = Vector3.Angle(hitLower.normal, _rigidbody.transform.up);
+                    if (stairSlopAngle == 90.0f)
+                    {
+                        raysThatHit.Add(hitLower);
+                    }
+                }
+            }
+            if (raysThatHit.Count > 0)
+            {
+                Vector3 rayUpper = new Vector3(_rigidbody.position.x, (((_rigidbody.position.y - _playerHalfHeightToGround) + _maxStepHeight) + _rayIncrementAmount), _rigidbody.position.z);
+                RaycastHit hitUpper;
+                Physics.Raycast(rayUpper, _rigidbody.transform.TransformDirection(_playerMoveInput), out hitUpper, calculatedVelDistance + (_maxAscendRayDistance * 2.0f));
+                if (!(hitUpper.collider) || (hitUpper.distance - raysThatHit[0].distance) > _minStepDepth)
+                {
+                    if (Vector3.Angle(raysThatHit[0].normal, _rigidbody.transform.TransformDirection(-_playerMoveInput)) <= _maximumAngleOfApproachToAscend)
+                    {
+                        Debug.DrawRay(rayUpper, _rigidbody.transform.TransformDirection(_playerMoveInput), Color.yellow, 5.0f);
+
+                        _playerIsAscendingStairs = true;
+                        Vector3 playerRelX = Vector3.Cross(_playerMoveInput, Vector3.up);
+
+                        if (_isFirstStep)
+                        {
+                            calculatedStepInput = Quaternion.AngleAxis(45.0f, playerRelX) * calculatedStepInput;
+                            _isFirstStep = false;
+                        }
+                        else
+                        {
+                            float stairHeight = raysThatHit.Count * _rayIncrementAmount * _stairHeightPaddingMultiplier;
+
+                            float avgDistance = 0.0f;
+                            foreach (RaycastHit r in raysThatHit)
+                            {
+                                avgDistance += r.distance;
+                            }
+                            avgDistance /= raysThatHit.Count;
+
+                            float tanAngle = Mathf.Atan2(stairHeight, avgDistance) * Mathf.Rad2Deg;
+                            calculatedStepInput = Quaternion.AngleAxis(tanAngle, playerRelX) * calculatedStepInput;
+                            calculatedStepInput *= _ascendingStairsMovementMultiplier;
+                        }
+                    }
+                    else
+                    { // more than 45 degree approach
+                        _playerIsAscendingStairs = false;
+                        _isFirstStep = true;
+                    }
+                }
+                else
+                { // top ray hit something
+                    _playerIsAscendingStairs = false;
+                    _isFirstStep = true;
+                }
+            }
+            else
+            { // no rays hit
+                _playerIsAscendingStairs = false;
+                _isFirstStep = true;
+            }
+        }
+        else
+        { // move is not pressed
+            _playerIsAscendingStairs = false;
+            _isFirstStep = true;
+        }
+        return calculatedStepInput;
+    }
+
+    private Vector3 DescendStairs(Vector3 calculatedStepInput)
+    {
+        if (_input.MoveIsPressed)
+        {
+            float ray = 0.0f;
+            List<RaycastHit> raysThatHit = new List<RaycastHit>();
+            for (int x = 1;
+                x <= _numberOfStepDetectRays;
+                x++, ray += _rayIncrementAmount)
+            {
+                Vector3 rayLower = new Vector3(_rigidbody.position.x, ((_rigidbody.position.y - _playerHalfHeightToGround) + ray), _rigidbody.position.z);
+                RaycastHit hitLower;
+                if (Physics.Raycast(rayLower, _rigidbody.transform.TransformDirection(-_playerMoveInput), out hitLower, _capsuleCollider.radius + _maxDescendRayDistance))
+                {
+                    float stairSlopAngle = Vector3.Angle(hitLower.normal, _rigidbody.transform.up);
+                    if (stairSlopAngle == 90.0f)
+                    {
+                        raysThatHit.Add(hitLower);
+                    }
+                }
+            }
+            if (raysThatHit.Count > 0)
+            {
+                Vector3 rayUpper = new Vector3(_rigidbody.position.x, (((_rigidbody.position.y - _playerHalfHeightToGround) + _maxStepHeight) + _rayIncrementAmount), _rigidbody.position.z);
+                RaycastHit hitUpper;
+                Physics.Raycast(rayUpper, _rigidbody.transform.TransformDirection(-_playerMoveInput), out hitUpper, _capsuleCollider.radius + (_maxDescendRayDistance * 2.0f));
+                if (!(hitUpper.collider) || (hitUpper.distance - raysThatHit[0].distance) > _minStepDepth)
+                {
+                    if (!(_playerIsGrounded) && hitUpper.distance < _capsuleCollider.radius + (_maxDescendRayDistance * 2.0f))
+                    {
+                        Debug.DrawRay(rayUpper, _rigidbody.transform.TransformDirection(-_playerMoveInput), Color.yellow, 5.0f);
+
+                        _playerIsDescendingStairs = true;
+                        Vector3 playerRelX = Vector3.Cross(_playerMoveInput, Vector3.up);
+
+                        float stairHeight = raysThatHit.Count * _rayIncrementAmount * _stairHeightPaddingMultiplier;
+
+                        float avgDistance = 0.0f;
+                        foreach (RaycastHit r in raysThatHit)
+                        {
+                            avgDistance += r.distance;
+                        }
+                        avgDistance /= raysThatHit.Count;
+
+                        float tanAngle = Mathf.Atan2(stairHeight, avgDistance) * Mathf.Rad2Deg;
+                        calculatedStepInput = Quaternion.AngleAxis(tanAngle -90.0f, playerRelX) * calculatedStepInput;
+                        calculatedStepInput *= _descendingStairsMovementMultiplier;
+                    }
+                    else
+                    {  // more than 45 degree approach
+                        _playerIsDescendingStairs = false;  
+                    }
+                }
+                else
+                {  // top ray hit something
+                    _playerIsDescendingStairs = false;  
+                }
+            }
+            else
+            {  // no rays hit
+                _playerIsDescendingStairs = false;
+            }
+        }
+        else
+        {  // move is not pressed
+            _playerIsDescendingStairs = false;
+        }
+        return calculatedStepInput;
     }
 
     private Vector3 PlayerSlope()
     {
         Vector3 calculatedPlayerMovement = _playerMoveInput;
 
-        if (_playerIsGrounded)
+        if (_playerIsGrounded && !_playerIsAscendingStairs && !_playerIsDescendingStairs)
         {
             Vector3 localGroundCheckHitNormal = _rigidbody.transform.InverseTransformDirection(_groundCheckHit.normal);
 
@@ -136,8 +335,7 @@ public class PlayerMovement : MonoBehaviour
                 if (_input.MoveIsPressed)
                 {
                     RaycastHit rayHit;
-                    float rayHeightFromGround = 0.1f;
-                    float rayCalculatedRayHeight = _rigidbody.position.y - _capsuleCollider.bounds.extents.y + rayHeightFromGround;
+                    float rayCalculatedRayHeight = _rigidbody.position.y - _playerCenterToGroundDistance + _groundCheckDistanceTolerance;
                     Vector3 rayOrigin = new Vector3(_rigidbody.position.x, rayCalculatedRayHeight, _rigidbody.position.z);
                     if (Physics.Raycast(rayOrigin, _rigidbody.transform.TransformDirection(calculatedPlayerMovement), out rayHit, 0.75f))
                     {
@@ -146,7 +344,7 @@ public class PlayerMovement : MonoBehaviour
                             calculatedPlayerMovement.y = -_movementMultiplier;
                         }
                     }
-                    Debug.DrawRay(rayOrigin, _rigidbody.transform.TransformDirection(calculatedPlayerMovement), Color.green, 1.0f);
+                    //Debug.DrawRay(rayOrigin, _rigidbody.transform.TransformDirection(calculatedPlayerMovement), Color.green, 1.0f);
                 }
 
                 if(calculatedPlayerMovement.y == 0.0f)
@@ -178,9 +376,6 @@ public class PlayerMovement : MonoBehaviour
                     }
                 }
             }
-#if UNITY_EDITOR
-            Debug.DrawRay(_rigidbody.position, _rigidbody.transform.TransformDirection(calculatedPlayerMovement), Color.red, 0.5f);
-#endif
         }
 
         return calculatedPlayerMovement;
@@ -199,7 +394,7 @@ public class PlayerMovement : MonoBehaviour
     private float PlayerFallGravity()
     {
         float gravity = _playerMoveInput.y;
-        if (_playerIsGrounded)
+        if (_playerIsGrounded || _playerIsAscendingStairs || _playerIsDescendingStairs)
         {
             _gravityFallCurrent = _gravityFallMin; // Reset
         }
@@ -208,13 +403,15 @@ public class PlayerMovement : MonoBehaviour
             _playerFallTimer -= Time.fixedDeltaTime;
             if(_playerFallTimer < 0.0f)
             {
-                if(_gravityFallCurrent > _gravityFallMax)
+                float gravityFallMax = _movementMultiplier * _runMultiplier * 2.0f;
+                float gravityFallIncrementAmount = (gravityFallMax - _gravityFallMin) * 0.1f;
+                if(_gravityFallCurrent < gravityFallMax)
                 {
-                    _gravityFallCurrent += _gravityFallIncrementAmount;
+                    _gravityFallCurrent += gravityFallIncrementAmount;
                 }
                 _playerFallTimer = _gravityFallIncrementTime;
             }
-            gravity = _gravityFallCurrent;
+            gravity = -_gravityFallCurrent;
         }
         return gravity;
     } 
@@ -231,7 +428,7 @@ public class PlayerMovement : MonoBehaviour
         {
             if(Vector3.Angle(_rigidbody.transform.up, _groundCheckHit.normal) < _maxSlopeAngle) // checks for jumping up slopes
             {
-                calculatedJumpInput = _initialJumpForce;
+                calculatedJumpInput = _initialJumpForceMultiplier;
                 _playerIsJumping = true;
                 _jumpBufferTimeCounter = 0.0f;
                 _coyoteTimeCounter = 0.0f;
@@ -239,7 +436,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (_input.JumpIsPressed && _playerIsJumping && !_playerIsGrounded && _jumpTimeCounter > 0.0f)
         {
-            calculatedJumpInput = _initialJumpForce * _continualJumpForceMultiplier;
+            calculatedJumpInput = _initialJumpForceMultiplier * _continualJumpForceMultiplier;
         }
         else if (_playerIsJumping && _playerIsGrounded)
         {

@@ -17,6 +17,8 @@ public class PlayerInput : MonoBehaviour
 
     public bool JumpIsPressed {  get; private set; } = false;
 
+    public bool CrouchIsPressed { get; private set; } = false;
+
     public bool ChangeCameraWasPressedThisFrame { get; private set; } = false;
 
     InputActions _input = null;
@@ -40,6 +42,9 @@ public class PlayerInput : MonoBehaviour
 
         _input.Movement.Jump.started += SetJump;
         _input.Movement.Jump.canceled += SetJump;
+
+        _input.Movement.Crouch.started += SetCrouch;
+        _input.Movement.Crouch.canceled += SetCrouch;
     }
 
     private void DisEnable()
@@ -58,6 +63,9 @@ public class PlayerInput : MonoBehaviour
 
         _input.Movement.Jump.started -= SetJump;
         _input.Movement.Jump.canceled -= SetJump;
+
+        _input.Movement.Crouch.started -= SetCrouch;
+        _input.Movement.Crouch.canceled -= SetCrouch;
 
         _input.Movement.Disable();
     }
@@ -86,6 +94,11 @@ public class PlayerInput : MonoBehaviour
     private void SetJump(InputAction.CallbackContext ctx)
     {
         JumpIsPressed = ctx.started;
+    }
+
+    private void SetCrouch(InputAction.CallbackContext ctx)
+    {
+        CrouchIsPressed = ctx.started;
     }
 
     private void SetZoomCamera(InputAction.CallbackContext ctx)

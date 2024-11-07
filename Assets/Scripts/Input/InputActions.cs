@@ -80,6 +80,15 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Crouch"",
+                    ""type"": ""Value"",
+                    ""id"": ""42ec27d2-da14-4123-999c-8ca48c6e03f9"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -313,6 +322,28 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a87ae211-c561-4dab-8647-b19110eaea21"",
+                    ""path"": ""<Keyboard>/leftCtrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Crouch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e9ff48c4-fe74-4d8f-b7ce-d733c47f5f43"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Crouch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -327,6 +358,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         m_Movement_ZoomCamera = m_Movement.FindAction("ZoomCamera", throwIfNotFound: true);
         m_Movement_Run = m_Movement.FindAction("Run", throwIfNotFound: true);
         m_Movement_Jump = m_Movement.FindAction("Jump", throwIfNotFound: true);
+        m_Movement_Crouch = m_Movement.FindAction("Crouch", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -394,6 +426,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Movement_ZoomCamera;
     private readonly InputAction m_Movement_Run;
     private readonly InputAction m_Movement_Jump;
+    private readonly InputAction m_Movement_Crouch;
     public struct MovementActions
     {
         private @InputActions m_Wrapper;
@@ -404,6 +437,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         public InputAction @ZoomCamera => m_Wrapper.m_Movement_ZoomCamera;
         public InputAction @Run => m_Wrapper.m_Movement_Run;
         public InputAction @Jump => m_Wrapper.m_Movement_Jump;
+        public InputAction @Crouch => m_Wrapper.m_Movement_Crouch;
         public InputActionMap Get() { return m_Wrapper.m_Movement; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -431,6 +465,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
             @Jump.started += instance.OnJump;
             @Jump.performed += instance.OnJump;
             @Jump.canceled += instance.OnJump;
+            @Crouch.started += instance.OnCrouch;
+            @Crouch.performed += instance.OnCrouch;
+            @Crouch.canceled += instance.OnCrouch;
         }
 
         private void UnregisterCallbacks(IMovementActions instance)
@@ -453,6 +490,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
             @Jump.started -= instance.OnJump;
             @Jump.performed -= instance.OnJump;
             @Jump.canceled -= instance.OnJump;
+            @Crouch.started -= instance.OnCrouch;
+            @Crouch.performed -= instance.OnCrouch;
+            @Crouch.canceled -= instance.OnCrouch;
         }
 
         public void RemoveCallbacks(IMovementActions instance)
@@ -478,5 +518,6 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         void OnZoomCamera(InputAction.CallbackContext context);
         void OnRun(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnCrouch(InputAction.CallbackContext context);
     }
 }
