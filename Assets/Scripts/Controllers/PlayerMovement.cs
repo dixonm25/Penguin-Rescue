@@ -24,6 +24,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float _notGroundedMovementMultiplier = 1.25f;
     [SerializeField] float _rotationSpeedMultiplier = 180.0f;
     [SerializeField] float _pitchSpeedMultiplier = 180.0f;
+    [SerializeField] float _crouchSpeedMultiplier = 0.5f;
     [SerializeField] float _runMultiplier = 2.5f;
 
     [Header("Ground Check")]
@@ -70,6 +71,16 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] bool _playerIsJumping = false;
     [SerializeField] bool _jumpWasPressedLastFrame = false;
 
+    [Header("Crouching")]
+    [SerializeField] bool _playerIsCrouching = false;
+    [SerializeField] [Range(0.0f, 1.8f)] float _headCheckRadiusMultiplier = 0.9f;
+    [SerializeField] float _crouchTimeMultiplier = 10.0f;
+    [SerializeField] float _playerCrouchedHeightTolerance = 0.05f;
+    float _crouchAmount = 1.0f;
+    float _playerFullHeight = 0.0f;  // Note: Gets set in Awake()
+    float _playerCrouchedHeight = 0.0f; // Note: Gets set in Awake()
+    Vector3 _playerCenterPoint = Vector3.zero;
+
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
@@ -80,6 +91,9 @@ public class PlayerMovement : MonoBehaviour
 
         _numberOfStepDetectRays = Mathf.RoundToInt(((_maxStepHeight * 100.0f) * 0.5f) + 1.0f);
         _rayIncrementAmount = _maxStepHeight / _numberOfStepDetectRays;
+
+        _playerFullHeight = _capsuleCollider.height;
+        _playerCrouchedHeight = _playerFullHeight - _crouchAmount;
     }
 
     private void FixedUpdate()
@@ -92,17 +106,19 @@ public class PlayerMovement : MonoBehaviour
         }
 
         _playerMoveInput = GetMoveInput();
+        PlayerVariables();
         _playerIsGrounded = PlayerGroundCheck();
 
         _playerMoveInput = PlayerMove();
         _playerMoveInput = PlayerStairs();
         _playerMoveInput = PlayerSlope();
+        _playerMoveInput = PlayerCrouch();
         _playerMoveInput = PlayerRun();
 
         _playerMoveInput.y = PlayerFallGravity();
         _playerMoveInput.y = PlayerJump();
 
-        Debug.DrawRay(_rigidbody.position, _rigidbody.transform.TransformDirection(_playerMoveInput), Color.red, 0.5f);
+        Debug.DrawRay(_playerCenterPoint, _rigidbody.transform.TransformDirection(_playerMoveInput), Color.red, 0.5f);
 
         _playerMoveInput *= _rigidbody.mass; // NOTE: for dev purposes - ep10
         
@@ -135,6 +151,11 @@ public class PlayerMovement : MonoBehaviour
         return new Vector3(_input.MoveInput.x, 0.0f, _input.MoveInput.y);
     }
 
+    private void PlayerVariables()
+    {
+        _playerCenterPoint = _rigidbody.position + _capsuleCollider.center;
+    }
+
     private Vector3 PlayerMove()
     {
         return ((_playerIsGrounded) ? (_playerMoveInput * _movementMultiplier) : (_playerMoveInput * _movementMultiplier * _notGroundedMovementMultiplier));
@@ -143,7 +164,7 @@ public class PlayerMovement : MonoBehaviour
     private bool PlayerGroundCheck()
     {
         float sphereCastRadius = _capsuleCollider.radius * _groundCheckRadiusMultiplier;
-        Physics.SphereCast(_rigidbody.position, sphereCastRadius, Vector3.down, out _groundCheckHit);
+        Physics.SphereCast(_playerCenterPoint, sphereCastRadius, Vector3.down, out _groundCheckHit);
         _playerCenterToGroundDistance = _groundCheckHit.distance + sphereCastRadius;
         return ((_playerCenterToGroundDistance >= _capsuleCollider.bounds.extents.y - _groundCheckDistanceTolerance) && 
                 (_playerCenterToGroundDistance <= _capsuleCollider.bounds.extents.y + _groundCheckDistanceTolerance));
@@ -179,7 +200,7 @@ public class PlayerMovement : MonoBehaviour
                 x <= _numberOfStepDetectRays; 
                 x++, ray += _rayIncrementAmount) 
             {
-                Vector3 rayLower = new Vector3(_rigidbody.position.x,((_rigidbody.position.y - _playerHalfHeightToGround) + ray), _rigidbody.position.z);
+                Vector3 rayLower = new Vector3(_playerCenterPoint.x,((_playerCenterPoint.y - _playerHalfHeightToGround) + ray), _playerCenterPoint.z);
                 RaycastHit hitLower;
                 if (Physics.Raycast(rayLower, _rigidbody.transform.TransformDirection(_playerMoveInput), out hitLower, calculatedVelDistance + _maxAscendRayDistance))
                 {
@@ -192,7 +213,7 @@ public class PlayerMovement : MonoBehaviour
             }
             if (raysThatHit.Count > 0)
             {
-                Vector3 rayUpper = new Vector3(_rigidbody.position.x, (((_rigidbody.position.y - _playerHalfHeightToGround) + _maxStepHeight) + _rayIncrementAmount), _rigidbody.position.z);
+                Vector3 rayUpper = new Vector3(_playerCenterPoint.x, (((_playerCenterPoint.y - _playerHalfHeightToGround) + _maxStepHeight) + _rayIncrementAmount), _playerCenterPoint.z);
                 RaycastHit hitUpper;
                 Physics.Raycast(rayUpper, _rigidbody.transform.TransformDirection(_playerMoveInput), out hitUpper, calculatedVelDistance + (_maxAscendRayDistance * 2.0f));
                 if (!(hitUpper.collider) || (hitUpper.distance - raysThatHit[0].distance) > _minStepDepth)
@@ -261,7 +282,7 @@ public class PlayerMovement : MonoBehaviour
                 x <= _numberOfStepDetectRays;
                 x++, ray += _rayIncrementAmount)
             {
-                Vector3 rayLower = new Vector3(_rigidbody.position.x, ((_rigidbody.position.y - _playerHalfHeightToGround) + ray), _rigidbody.position.z);
+                Vector3 rayLower = new Vector3(_playerCenterPoint.x, ((_playerCenterPoint.y - _playerHalfHeightToGround) + ray), _playerCenterPoint.z);
                 RaycastHit hitLower;
                 if (Physics.Raycast(rayLower, _rigidbody.transform.TransformDirection(-_playerMoveInput), out hitLower, _capsuleCollider.radius + _maxDescendRayDistance))
                 {
@@ -274,7 +295,7 @@ public class PlayerMovement : MonoBehaviour
             }
             if (raysThatHit.Count > 0)
             {
-                Vector3 rayUpper = new Vector3(_rigidbody.position.x, (((_rigidbody.position.y - _playerHalfHeightToGround) + _maxStepHeight) + _rayIncrementAmount), _rigidbody.position.z);
+                Vector3 rayUpper = new Vector3(_playerCenterPoint.x, (((_playerCenterPoint.y - _playerHalfHeightToGround) + _maxStepHeight) + _rayIncrementAmount), _playerCenterPoint.z);
                 RaycastHit hitUpper;
                 Physics.Raycast(rayUpper, _rigidbody.transform.TransformDirection(-_playerMoveInput), out hitUpper, _capsuleCollider.radius + (_maxDescendRayDistance * 2.0f));
                 if (!(hitUpper.collider) || (hitUpper.distance - raysThatHit[0].distance) > _minStepDepth)
@@ -335,8 +356,8 @@ public class PlayerMovement : MonoBehaviour
                 if (_input.MoveIsPressed)
                 {
                     RaycastHit rayHit;
-                    float rayCalculatedRayHeight = _rigidbody.position.y - _playerCenterToGroundDistance + _groundCheckDistanceTolerance;
-                    Vector3 rayOrigin = new Vector3(_rigidbody.position.x, rayCalculatedRayHeight, _rigidbody.position.z);
+                    float rayCalculatedRayHeight = _playerCenterPoint.y - _playerCenterToGroundDistance + _groundCheckDistanceTolerance;
+                    Vector3 rayOrigin = new Vector3(_playerCenterPoint.x, rayCalculatedRayHeight, _playerCenterPoint.z);
                     if (Physics.Raycast(rayOrigin, _rigidbody.transform.TransformDirection(calculatedPlayerMovement), out rayHit, 0.75f))
                     {
                         if(Vector3.Angle(rayHit.normal, _rigidbody.transform.up) > _maxSlopeAngle)
@@ -381,10 +402,86 @@ public class PlayerMovement : MonoBehaviour
         return calculatedPlayerMovement;
     }
 
+    private Vector3 PlayerCrouch()
+    {
+        Vector3 calculatedPlayerCrouchSpeed = _playerMoveInput;
+        if (_input.CrouchIsPressed)
+        {
+            Crouch();
+        }
+        else if (_playerIsCrouching)
+        {
+            Uncrouch();
+        }
+        if (_playerIsCrouching)
+        {
+            calculatedPlayerCrouchSpeed *= _crouchSpeedMultiplier;
+        }
+        return calculatedPlayerCrouchSpeed;
+    }
+
+    private void Crouch() 
+    {
+        if(_capsuleCollider.height >= _playerCrouchedHeight + _playerCrouchedHeightTolerance)
+        {
+            float time = Time.fixedDeltaTime * _crouchTimeMultiplier;
+            float amount = Mathf.Lerp(0.0f, _crouchAmount, time);
+
+            _capsuleCollider.height -= amount;
+            _capsuleCollider.center = new Vector3(_capsuleCollider.center.x, _capsuleCollider.center.y + (amount * 0.5f), _capsuleCollider.center.z);
+            _rigidbody.position = new Vector3(_rigidbody.position.x, _rigidbody.position.y - amount, _rigidbody.position.z);
+
+            _playerIsCrouching = true;
+        }
+        else
+        {
+            EnforceExactCharHeight();
+        }
+    }
+
+    private void Uncrouch()
+    {
+        if(_capsuleCollider.height < _playerFullHeight - _playerCrouchedHeightTolerance)
+        {
+            float sphereCastRadius = _capsuleCollider.radius * _headCheckRadiusMultiplier;
+            float headroomBufferDistance = 0.05f;
+            float sphereCastTravelDistance = (_capsuleCollider.bounds.extents.y + headroomBufferDistance) - sphereCastRadius;
+            if (!(Physics.SphereCast(_playerCenterPoint, sphereCastRadius, _rigidbody.transform.up, out _, sphereCastTravelDistance)))
+            {
+                float time = Time.fixedDeltaTime * _crouchTimeMultiplier;
+                float amount = Mathf.Lerp(0.0f, _crouchAmount, time);
+
+                _capsuleCollider.height += amount;
+                _capsuleCollider.center = new Vector3(_capsuleCollider.center.x, _capsuleCollider.center.y, _capsuleCollider.center.z);
+                _rigidbody.position = new Vector3(_rigidbody.position.x, _rigidbody.position.y + amount, _rigidbody.position.z);
+            }
+        }
+        else
+        {
+            _playerIsCrouching = false;
+            EnforceExactCharHeight();
+        }
+    }
+
+    private void EnforceExactCharHeight()
+    {
+        if (_playerIsCrouching)
+        {
+            _capsuleCollider.height = _playerCrouchedHeight;
+            _capsuleCollider.center = new Vector3(0.0f, _crouchAmount * 0.5f, 0.0f);
+        }
+        else
+        {
+            _capsuleCollider.height = _playerFullHeight;
+            _capsuleCollider.center = Vector3.zero;
+            _playerIsCrouching = false;
+        }
+    }
+
     private Vector3 PlayerRun()
     {
         Vector3 calculatedPlayerRunSpeed = _playerMoveInput;
-        if (_input.MoveIsPressed && _input.RunIsPressed)
+        if (_input.MoveIsPressed && _input.RunIsPressed && !_playerIsCrouching)
         {
             calculatedPlayerRunSpeed *= _runMultiplier;
         }
