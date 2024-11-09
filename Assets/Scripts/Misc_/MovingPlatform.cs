@@ -16,7 +16,6 @@ public class MovingPlatform : MonoBehaviour
 
     bool isWaiting;
 
-
     // Start is called before the first frame update
     void Start()
     {
@@ -28,7 +27,7 @@ public class MovingPlatform : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         Move();
     }
@@ -77,15 +76,15 @@ public class MovingPlatform : MonoBehaviour
         isWaiting = false;
     }
 
-    void OnTriggerExit(Collider other)
+    private void OnTriggerExit(Collider other)
     {
-        if(other.gameObject.tag == "Player")
+        if (other.gameObject.tag == "Player") 
         {
             other.transform.parent = null;
         }
     }
 
-    void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Player")
         {

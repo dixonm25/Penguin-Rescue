@@ -14,7 +14,7 @@ public class EnemyPatrol : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if (transform.position != points[current].position)
         {

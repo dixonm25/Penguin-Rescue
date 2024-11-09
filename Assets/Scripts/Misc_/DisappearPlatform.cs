@@ -9,7 +9,7 @@ public class DisappearPlatform : MonoBehaviour
 
     void OnTriggerEnter(Collider collider) 
     {
-        if (collider.gameObject.name == "Player")
+        if (collider.gameObject.tag == "Player")
         {
             HideAndShow();       
         } 
