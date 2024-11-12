@@ -19,6 +19,8 @@ public class PlayerInput : MonoBehaviour
 
     public bool CrouchIsPressed { get; private set; } = false;
 
+    public bool MenuOpenCloseWasPressedThisFrame { get; private set; } = false;
+
     public bool ChangeCameraWasPressedThisFrame { get; private set; } = false;
 
     InputActions _input = null;
@@ -73,6 +75,7 @@ public class PlayerInput : MonoBehaviour
     private void Update()
     {
         ChangeCameraWasPressedThisFrame = _input.Movement.ChangeCamera.WasPressedThisFrame();
+        MenuOpenCloseWasPressedThisFrame = _input.Movement.MenuOpenClose.WasPressedThisFrame();
     }
 
     private void SetMove(InputAction.CallbackContext ctx)
