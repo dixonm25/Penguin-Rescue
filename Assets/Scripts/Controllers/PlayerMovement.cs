@@ -16,12 +16,12 @@ public class PlayerMovement : MonoBehaviour
 
     Vector3 _playerLookInput = Vector3.zero;
     Vector3 _previousPlayerLookInput = Vector3.zero;
-    [SerializeField]float _cameraPitch = 0.0f;
+    [SerializeField] float _cameraPitch = 0.0f;
     [SerializeField] float _playerLookInputLerpTime = 0.35f;
 
     [Header("Movement")]
-    [SerializeField] float _movementMultiplier = 30.0f;
-    [SerializeField] float _notGroundedMovementMultiplier = 1.25f;
+    [SerializeField] public float _movementMultiplier = 30.0f;
+    [SerializeField] public float _notGroundedMovementMultiplier = 1.25f;
     [SerializeField] float _rotationSpeedMultiplier = 180.0f;
     [SerializeField] float _pitchSpeedMultiplier = 180.0f;
     [SerializeField] float _crouchSpeedMultiplier = 0.5f;
@@ -29,8 +29,8 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Ground Check")]
     [SerializeField] bool _playerIsGrounded = true;
-    [SerializeField] [Range(0.0f, 1.8f)] float _groundCheckRadiusMultiplier = 0.9f;
-    [SerializeField] [Range(-0.95f, 1.05f)] float _groundCheckDistanceTolerance = 0.05f;
+    [SerializeField][Range(0.0f, 1.8f)] float _groundCheckRadiusMultiplier = 0.9f;
+    [SerializeField][Range(-0.95f, 1.05f)] float _groundCheckDistanceTolerance = 0.05f;
     [SerializeField] float _playerCenterToGroundDistance = 0.0f;
     RaycastHit _groundCheckHit = new RaycastHit();
 
@@ -43,8 +43,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float _maxSlopeAngle = 47.5f;
 
     [Header("Stairs")]
-    [SerializeField] [Range(0.0f, 1.0f)] float _maxStepHeight = 0.5f;
-    [SerializeField] [Range(0.0f, 1.0f)] float _minStepDepth = 0.3f;
+    [SerializeField][Range(0.0f, 1.0f)] float _maxStepHeight = 0.5f;
+    [SerializeField][Range(0.0f, 1.0f)] float _minStepDepth = 0.3f;
     [SerializeField] float _stairHeightPaddingMultiplier = 1.5f;
     [SerializeField] bool _isFirstStep = true;
     [SerializeField] float _firstStepVelocityDistanceMultiplier = 0.1f;
@@ -73,13 +73,16 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Crouching")]
     [SerializeField] bool _playerIsCrouching = false;
-    [SerializeField] [Range(0.0f, 1.8f)] float _headCheckRadiusMultiplier = 0.9f;
+    [SerializeField][Range(0.0f, 1.8f)] float _headCheckRadiusMultiplier = 0.9f;
     [SerializeField] float _crouchTimeMultiplier = 10.0f;
     [SerializeField] float _playerCrouchedHeightTolerance = 0.05f;
     float _crouchAmount = 1.0f;
     float _playerFullHeight = 0.0f;  // Note: Gets set in Awake()
     float _playerCrouchedHeight = 0.0f; // Note: Gets set in Awake()
     Vector3 _playerCenterPoint = Vector3.zero;
+
+    [Header("Power ups")]
+    [SerializeField] private TrailRenderer _airTrail; 
 
     private void Awake()
     {
@@ -94,6 +97,8 @@ public class PlayerMovement : MonoBehaviour
 
         _playerFullHeight = _capsuleCollider.height;
         _playerCrouchedHeight = _playerFullHeight - _crouchAmount;
+
+        _airTrail.enabled = false;
     }
 
     private void FixedUpdate()
@@ -583,5 +588,16 @@ public class PlayerMovement : MonoBehaviour
         }
         _jumpWasPressedLastFrame = _input.JumpIsPressed;
         
+    }
+
+    // power ups
+    public void SetMoveSpeed(float newSpeedAdjustment)
+    {
+        _movementMultiplier += newSpeedAdjustment;        
+    }
+
+    public void SetAirTrail(bool activeState)
+    {
+        _airTrail.enabled = activeState;
     }
 }
