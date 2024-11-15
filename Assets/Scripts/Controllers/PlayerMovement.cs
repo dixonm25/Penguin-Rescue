@@ -82,7 +82,8 @@ public class PlayerMovement : MonoBehaviour
     Vector3 _playerCenterPoint = Vector3.zero;
 
     [Header("Power ups")]
-    [SerializeField] private TrailRenderer _airTrail; 
+    [SerializeField] private TrailRenderer _airTrail;
+    [SerializeField] public ParticleSystem _airParticles;
 
     private void Awake()
     {
@@ -99,6 +100,7 @@ public class PlayerMovement : MonoBehaviour
         _playerCrouchedHeight = _playerFullHeight - _crouchAmount;
 
         _airTrail.enabled = false;
+        _airParticles.Stop();
     }
 
     private void FixedUpdate()
@@ -599,5 +601,11 @@ public class PlayerMovement : MonoBehaviour
     public void SetAirTrail(bool activeState)
     {
         _airTrail.enabled = activeState;
+        _airParticles.Play();
+    }
+
+    public void SetSlopeLimit(float newSlopeLimit)
+    {
+        _maxSlopeAngle += newSlopeLimit;
     }
 }

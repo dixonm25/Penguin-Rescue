@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
-public class AirPowerUp : MonoBehaviour
+public class FirePowerUp : MonoBehaviour
 {
-    [SerializeField] private float _speedIncreaseAmount = 25f;
-    [SerializeField] private float _powerupDuration = 5;
+    [SerializeField] private float _slopeIncreaseAmount;
+    [SerializeField] private float _powerupDuration = 20f;
 
 
     [SerializeField] private GameObject _artToDisable = null;
@@ -15,13 +15,13 @@ public class AirPowerUp : MonoBehaviour
 
     private void Awake()
     {
-        _collider = GetComponent<Collider> ();
+        _collider = GetComponent<Collider>();
     }
 
     private void OnTriggerEnter(Collider other)
     {
         PlayerMovement playerMovement = other.gameObject.GetComponent<PlayerMovement>();
-        if(playerMovement != null)
+        if (playerMovement != null)
         {
             StartCoroutine(PowerupSequence(playerMovement));
         }
@@ -33,7 +33,7 @@ public class AirPowerUp : MonoBehaviour
         _collider.enabled = false;
         _artToDisable.SetActive(false);
 
-      
+
         ActivatePowerup(playerMovement);
         //wait to deactivate
         yield return new WaitForSeconds(_powerupDuration);
@@ -44,15 +44,14 @@ public class AirPowerUp : MonoBehaviour
 
     private void ActivatePowerup(PlayerMovement playerMovement)
     {
-        playerMovement.SetMoveSpeed(_speedIncreaseAmount);
-        playerMovement.SetAirTrail(true);
+        playerMovement.SetSlopeLimit(_slopeIncreaseAmount);
+       // playerMovement.SetFireTrail(true);
     }
 
     private void DeactivatePowerup(PlayerMovement playerMovement)
     {
-        playerMovement.SetMoveSpeed(-_speedIncreaseAmount);
-        playerMovement.SetAirTrail(false);
-        playerMovement._airParticles.Stop();
+        playerMovement.SetSlopeLimit(-_slopeIncreaseAmount);
+       // playerMovement.SetFireTrail(false);
     }
 
 }
