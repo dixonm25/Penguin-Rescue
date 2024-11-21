@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
 {
     public Transform CameraFollow;
 
-    [SerializeField] PlayerInput _input;
+    [SerializeField] InputManager _input;
     [SerializeField] CameraController _cameraController;
 
     Rigidbody _rigidbody = null;

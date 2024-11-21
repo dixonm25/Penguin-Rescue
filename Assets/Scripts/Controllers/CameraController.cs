@@ -5,7 +5,7 @@ public class CameraController : MonoBehaviour
 {
     public bool UsingOrbitalCamera {  get; private set; } = false;
 
-    [SerializeField] PlayerInput _input;
+    [SerializeField] InputManager _input;
 
     [SerializeField] float _cameraZoomModifier = 32.0f;
 

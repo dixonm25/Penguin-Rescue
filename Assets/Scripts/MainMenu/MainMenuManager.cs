@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuManager : MonoBehaviour
 {
-    [SerializeField] PlayerInput _input;
+    [SerializeField] InputManager _input;
 
     [SerializeField] private GameObject _mainMenuCanvasGO;
     [SerializeField] private GameObject _settingsMenuCanvasGO;

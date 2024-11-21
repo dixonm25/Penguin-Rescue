@@ -7,7 +7,7 @@ public class DialogueController : MonoBehaviour
 {
     public PlayerMovement playerMovementScript;
 
-    [SerializeField] PlayerInput _input;
+    [SerializeField] InputManager _input;
 
     [SerializeField] private TextMeshProUGUI NPCNameText;
     [SerializeField] private TextMeshProUGUI NPCDialogueText;

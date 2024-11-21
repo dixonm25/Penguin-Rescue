@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour
 {
-    [SerializeField] PlayerInput _input;
+    [SerializeField] InputManager _input;
 
     public PlayerMovement playerMovementScript;
     public CameraController cameraControllerScript;
