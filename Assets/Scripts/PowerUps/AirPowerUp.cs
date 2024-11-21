@@ -39,7 +39,10 @@ public class AirPowerUp : MonoBehaviour
         yield return new WaitForSeconds(_powerupDuration);
         DeactivatePowerup(playerMovement);
 
-        Destroy(gameObject);
+        _collider.enabled = true;
+        _artToDisable.SetActive(true);
+
+        // Destroy(gameObject);
     }
 
     private void ActivatePowerup(PlayerMovement playerMovement)

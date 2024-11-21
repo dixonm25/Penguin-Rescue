@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -18,12 +20,13 @@ public class PlayerMovement : MonoBehaviour
     Vector3 _previousPlayerLookInput = Vector3.zero;
     [SerializeField] float _cameraPitch = 0.0f;
     [SerializeField] float _playerLookInputLerpTime = 0.35f;
+    [SerializeField] public Slider slider;
 
     [Header("Movement")]
     [SerializeField] public float _movementMultiplier = 30.0f;
     [SerializeField] public float _notGroundedMovementMultiplier = 1.25f;
-    [SerializeField] float _rotationSpeedMultiplier = 180.0f;
-    [SerializeField] float _pitchSpeedMultiplier = 180.0f;
+    [SerializeField] float _rotationSpeedMultiplier = 360.0f;
+    [SerializeField] float _pitchSpeedMultiplier = 360.0f;
     [SerializeField] float _crouchSpeedMultiplier = 0.5f;
     [SerializeField] float _runMultiplier = 2.5f;
 
@@ -84,6 +87,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Power ups")]
     [SerializeField] private TrailRenderer _airTrail;
     [SerializeField] public ParticleSystem _airParticles;
+    [SerializeField] public ParticleSystem _fireParticles;
 
     private void Awake()
     {
@@ -99,8 +103,12 @@ public class PlayerMovement : MonoBehaviour
         _playerFullHeight = _capsuleCollider.height;
         _playerCrouchedHeight = _playerFullHeight - _crouchAmount;
 
+        _rotationSpeedMultiplier = PlayerPrefs.GetFloat("currentSensitivity", 100);
+        slider.value = _rotationSpeedMultiplier / 36;
+
         _airTrail.enabled = false;
         _airParticles.Stop();
+        _fireParticles.Stop();
     }
 
     private void FixedUpdate()
@@ -127,7 +135,7 @@ public class PlayerMovement : MonoBehaviour
 
         Debug.DrawRay(_playerCenterPoint, _rigidbody.transform.TransformDirection(_playerMoveInput), Color.red, 0.5f);
 
-        _playerMoveInput *= _rigidbody.mass; // NOTE: for dev purposes - ep10
+        _playerMoveInput *= _rigidbody.mass; 
         
         _rigidbody.AddRelativeForce(_playerMoveInput, ForceMode.Force);
     }
@@ -146,11 +154,18 @@ public class PlayerMovement : MonoBehaviour
 
     private void PitchCamera()
     {
+        PlayerPrefs.SetFloat("currentSensitivity", _rotationSpeedMultiplier);
+
         Vector3 rotationValues = CameraFollow.rotation.eulerAngles;
         _cameraPitch += _playerLookInput.y * _pitchSpeedMultiplier;
         _cameraPitch = Mathf.Clamp(_cameraPitch, -89.9f, 89.9f);
 
         CameraFollow.rotation = Quaternion.Euler(_cameraPitch, rotationValues.y, rotationValues.z);
+    }
+
+    public void AdjustSensitivity(float newSensitivity)
+    {
+        _rotationSpeedMultiplier = newSensitivity * 36;
     }
 
     private Vector3 GetMoveInput()
@@ -607,5 +622,10 @@ public class PlayerMovement : MonoBehaviour
     public void SetSlopeLimit(float newSlopeLimit)
     {
         _maxSlopeAngle += newSlopeLimit;
+    }
+
+    public void SetFireTrail(bool activeState)
+    {
+        _fireParticles.Play();
     }
 }

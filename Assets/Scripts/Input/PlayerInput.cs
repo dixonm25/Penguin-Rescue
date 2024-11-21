@@ -19,6 +19,8 @@ public class PlayerInput : MonoBehaviour
 
     public bool CrouchIsPressed { get; private set; } = false;
 
+    public bool InteractionWasPressedThisFrame { get; private set; } = false;
+
     public bool MenuOpenCloseWasPressedThisFrame { get; private set; } = false;
 
     public bool ChangeCameraWasPressedThisFrame { get; private set; } = false;
@@ -49,7 +51,7 @@ public class PlayerInput : MonoBehaviour
         _input.Movement.Crouch.canceled += SetCrouch;
     }
 
-    private void DisEnable()
+    private void OnDisable()
     {
         _input.Movement.Move.performed -= SetMove;
         _input.Movement.Move.canceled -= SetMove;
@@ -76,6 +78,7 @@ public class PlayerInput : MonoBehaviour
     {
         ChangeCameraWasPressedThisFrame = _input.Movement.ChangeCamera.WasPressedThisFrame();
         MenuOpenCloseWasPressedThisFrame = _input.Movement.MenuOpenClose.WasPressedThisFrame();
+        InteractionWasPressedThisFrame = _input.Movement.Interaction.WasPressedThisFrame();
     }
 
     private void SetMove(InputAction.CallbackContext ctx)

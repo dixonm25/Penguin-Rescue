@@ -39,19 +39,23 @@ public class FirePowerUp : MonoBehaviour
         yield return new WaitForSeconds(_powerupDuration);
         DeactivatePowerup(playerMovement);
 
-        Destroy(gameObject);
+        _collider.enabled = true;
+        _artToDisable.SetActive(true);
+
+        // Destroy(gameObject);
     }
 
     private void ActivatePowerup(PlayerMovement playerMovement)
     {
         playerMovement.SetSlopeLimit(_slopeIncreaseAmount);
-       // playerMovement.SetFireTrail(true);
+        playerMovement.SetFireTrail(true);
     }
 
     private void DeactivatePowerup(PlayerMovement playerMovement)
     {
         playerMovement.SetSlopeLimit(-_slopeIncreaseAmount);
-       // playerMovement.SetFireTrail(false);
+        playerMovement.SetFireTrail(false);
+        playerMovement._fireParticles.Stop();
     }
 
 }
