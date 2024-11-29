@@ -48,6 +48,16 @@ public class MainMenuManager : MonoBehaviour
 
     private void StartGame()
     {
+        SceneManager.LoadScene(2);
+    }
+
+    public void OnTestingScenePress()
+    {
+        TestScene();
+    }
+
+    private void TestScene()
+    {
         SceneManager.LoadScene(0);
     }
 
