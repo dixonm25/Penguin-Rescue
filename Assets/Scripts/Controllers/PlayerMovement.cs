@@ -25,8 +25,8 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement")]
     [SerializeField] public float _movementMultiplier = 30.0f;
     [SerializeField] public float _notGroundedMovementMultiplier = 1.25f;
-    [SerializeField] float _rotationSpeedMultiplier = 360.0f;
-    [SerializeField] float _pitchSpeedMultiplier = 360.0f;
+    [SerializeField] float _rotationSpeedMultiplier = 180.0f;
+    [SerializeField] float _pitchSpeedMultiplier = 180.0f;
     [SerializeField] float _crouchSpeedMultiplier = 0.5f;
     [SerializeField] float _runMultiplier = 2.5f;
 
@@ -150,11 +150,13 @@ public class PlayerMovement : MonoBehaviour
     private void PlayerLook()
     {
         _rigidbody.rotation = Quaternion.Euler(0.0f, _rigidbody.rotation.eulerAngles.y + (_playerLookInput.x * _rotationSpeedMultiplier), 0.0f);
+
+        PlayerPrefs.SetFloat("currentSensitivity", _rotationSpeedMultiplier);
     }
 
     private void PitchCamera()
     {
-        PlayerPrefs.SetFloat("currentSensitivity", _rotationSpeedMultiplier);
+        
 
         Vector3 rotationValues = CameraFollow.rotation.eulerAngles;
         _cameraPitch += _playerLookInput.y * _pitchSpeedMultiplier;
