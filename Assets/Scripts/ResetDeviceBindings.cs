@@ -8,6 +8,15 @@ public class ResetDeviceBindings : MonoBehaviour
     [SerializeField] private InputActionAsset _inputActions;
     [SerializeField] private string _targetControlScheme;
 
+
+    public void ResetAllBindings()
+    {
+        foreach (InputActionMap map in _inputActions.actionMaps)
+        {
+            map.RemoveAllBindingOverrides();
+        }
+    }
+
     public void ResetControlSchemeBinding()
     {
         foreach (InputActionMap map in _inputActions.actionMaps)

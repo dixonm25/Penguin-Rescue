@@ -417,7 +417,7 @@ public class PlayerMovement : MonoBehaviour
                     float calculatedSlopeGravity = groundSlopeAngle * -0.2f;
                     if (calculatedSlopeGravity < calculatedPlayerMovement.y)
                     {
-                        calculatedPlayerMovement.y = calculatedSlopeGravity;
+                        calculatedPlayerMovement.y = calculatedSlopeGravity * 10f;
                     }
                 }
             }
