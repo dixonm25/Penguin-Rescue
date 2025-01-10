@@ -11,6 +11,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] InputManager _input;
     [SerializeField] CameraController _cameraController;
 
+    private Animator animator;
+    [SerializeField] GameObject otherObject;
+
     Rigidbody _rigidbody = null;
     CapsuleCollider _capsuleCollider = null;
 
@@ -94,6 +97,8 @@ public class PlayerMovement : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody>();
         _capsuleCollider = GetComponent<CapsuleCollider>();
 
+        animator = otherObject.GetComponent<Animator>();
+
         _maxAscendRayDistance = _maxStepHeight / Mathf.Cos(_maximumAngleOfApproachToAscend * Mathf.Deg2Rad);
         _maxDescendRayDistance = _maxStepHeight / Mathf.Cos(80.0f * Mathf.Deg2Rad);
 
@@ -172,6 +177,15 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector3 GetMoveInput()
     {
+        if (_input.MoveIsPressed)
+        {
+            animator.SetBool("IsMoving", true);
+        }
+        else
+        {
+            animator.SetBool("IsMoving", false);
+        }
+
         return new Vector3(_input.MoveInput.x, 0.0f, _input.MoveInput.y);
     }
 
@@ -507,7 +521,13 @@ public class PlayerMovement : MonoBehaviour
         Vector3 calculatedPlayerRunSpeed = _playerMoveInput;
         if (_input.MoveIsPressed && _input.RunIsPressed && !_playerIsCrouching)
         {
+            animator.SetBool("IsRunning", true);
+            animator.SetBool("IsMoving", false);
             calculatedPlayerRunSpeed *= _runMultiplier;
+        }
+        else
+        {
+            animator.SetBool("IsRunning", false);
         }
         return calculatedPlayerRunSpeed;
     }
