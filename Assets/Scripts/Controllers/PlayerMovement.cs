@@ -14,6 +14,8 @@ public class PlayerMovement : MonoBehaviour
     private Animator animator;
     [SerializeField] GameObject otherObject;
 
+    [SerializeField] bool PuMoving = false;
+
     Rigidbody _rigidbody = null;
     CapsuleCollider _capsuleCollider = null;
 
@@ -571,6 +573,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 calculatedJumpInput = _initialJumpForceMultiplier;
                 _playerIsJumping = true;
+                animator.SetBool("IsJumping", true);
                 _jumpBufferTimeCounter = 0.0f;
                 _coyoteTimeCounter = 0.0f;
             }
@@ -582,12 +585,15 @@ public class PlayerMovement : MonoBehaviour
         else if (_playerIsJumping && _playerIsGrounded)
         {
             _playerIsJumping = false;
+            animator.SetBool("IsJumping", false);
         }
 
         if (!_playerIsGrounded && _input.JumpIsPressed) // checks jump key for floating
         {
             _gravityFallCurrent = _gravityFallMin;
         }
+
+
         return calculatedJumpInput;
     }
 
@@ -596,10 +602,24 @@ public class PlayerMovement : MonoBehaviour
         if (_playerIsJumping && !_playerIsGrounded)
         {
             _jumpTimeCounter -= Time.fixedDeltaTime;
+            animator.SetBool("IsFalling", true);
+            animator.SetBool("IsGrounded", false);
+        }
+        else if (!_playerIsJumping && !_playerIsGrounded)
+        {
+            animator.SetBool("IsFalling", true);
+            animator.SetBool("IsGrounded", false);
         }
         else
         {
             _jumpTimeCounter = _jumpTime;
+        }
+
+        if (_playerIsGrounded)
+        {
+            animator.SetBool("IsFalling", false);
+            animator.SetBool("IsGrounded", true);
+            animator.SetBool("IsJumping", false);
         }
     }
 
@@ -639,6 +659,16 @@ public class PlayerMovement : MonoBehaviour
     {
         _airTrail.enabled = activeState;
         _airParticles.Play();
+        PuMoving = true;
+        if (PuMoving == true)
+        {
+            animator.SetBool("PuMoving", true);
+        }
+        if (!_airTrail.enabled)
+        {
+            animator.SetBool("PuMoving", false);
+        }
+
     }
 
     public void SetSlopeLimit(float newSlopeLimit)
