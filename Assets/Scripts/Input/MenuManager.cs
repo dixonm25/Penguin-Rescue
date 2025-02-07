@@ -153,7 +153,7 @@ public class MenuManager : MonoBehaviour
 
     private void ExitGameButton()
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(0);
     }
 
     public void OnResumePress()

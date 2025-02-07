@@ -51,14 +51,14 @@ public class MainMenuManager : MonoBehaviour
         SceneManager.LoadScene(2);
     }
 
-    public void OnTestingScenePress()
+    public void OnQuitGamePress()
     {
-        TestScene();
+        QuitGame();
     }
 
-    private void TestScene()
-    {
-        SceneManager.LoadScene(0);
+    private void QuitGame() 
+    { 
+        Application.Quit(); 
     }
 
     public void OnSettingsPress()
