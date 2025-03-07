@@ -10,19 +10,25 @@ public class EnemyPatrol : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        current = 0;
+        current = 1;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (transform.position != points[current].position)
+        if (transform.position == points[current].position)
         {
-            transform.position = Vector3.MoveTowards(transform.position, points[current].position, speed * Time.deltaTime);
+            increaseCurrentInt();
         }
-        else
+        transform.position = Vector3.MoveTowards(transform.position, points[current].position, speed * Time.deltaTime);
+    }
+
+    void increaseCurrentInt()
+    {
+        current++;
+        if (current >= points.Length)
         {
-            current = (current + 1) % points.Length;
+            current = 0;
         }
     }
 }
