@@ -7,6 +7,8 @@ public class CoinCollection : MonoBehaviour
 {
     private int Coin = 0;
 
+    [SerializeField] private AudioClip pickUpCoin;
+
     public TextMeshProUGUI coinText;
 
     private void OnTriggerEnter(Collider other)
@@ -18,5 +20,6 @@ public class CoinCollection : MonoBehaviour
             Debug.Log(Coin);
             Destroy(other.gameObject);
         }
+        SoundFXManager.instance.PlaySoundFXClip(pickUpCoin, transform, 1f);
     }
 }
