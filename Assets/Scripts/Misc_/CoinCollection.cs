@@ -15,11 +15,11 @@ public class CoinCollection : MonoBehaviour
     {
         if(other.transform.tag == "Coin")
         {
+            SoundFXManager.instance.PlaySoundFXClip(pickUpCoin, transform, 1f);
             Coin++;
             coinText.text = "Coins:" + Coin.ToString();
             Debug.Log(Coin);
             Destroy(other.gameObject);
         }
-        SoundFXManager.instance.PlaySoundFXClip(pickUpCoin, transform, 1f);
     }
 }
