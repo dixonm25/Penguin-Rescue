@@ -13,6 +13,8 @@ public class DialogueController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI NPCDialogueText;
     [SerializeField] private float typeSpeed = 10;
 
+    [SerializeField] private AudioClip[] npcQuacks;
+
     private Queue<string> paragraphs = new Queue<string>();
 
     private bool conversationEnded;
@@ -60,6 +62,7 @@ public class DialogueController : MonoBehaviour
     private void StartConversation(DialogueText dialogueText)
     {
         playerMovementScript.enabled = false;
+        SoundFXManager.instance.PlayRandomSoundFXClip(npcQuacks, transform, 1f);
 
         if (!gameObject.activeSelf)
         {
