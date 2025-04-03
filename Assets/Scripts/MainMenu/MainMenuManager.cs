@@ -9,12 +9,14 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] InputManager _input;
 
     [SerializeField] private GameObject _mainMenuCanvasGO;
+    [SerializeField] private GameObject _interMainMenuCanvasGO;
     [SerializeField] private GameObject _settingsMenuCanvasGO;
     [SerializeField] private GameObject _gamepadMenuCanvasGO;
     [SerializeField] private GameObject _keyboardMenuCanvasGO;
 
     //first button selected on open
     [SerializeField] private GameObject _mainMenuFirst;
+    [SerializeField] private GameObject _interMainMenuFirst;
     [SerializeField] private GameObject _settingsMenuFirst;
     [SerializeField] private GameObject _gamepadMenuFirst;
     [SerializeField] private GameObject _keyboardMenuFirst;
@@ -34,11 +36,28 @@ public class MainMenuManager : MonoBehaviour
     public void OpenMainMenu()
     {
         _mainMenuCanvasGO.SetActive(true);
+        _interMainMenuCanvasGO.SetActive(false);
         _settingsMenuCanvasGO.SetActive(false);
         _gamepadMenuCanvasGO.SetActive(false);
         _keyboardMenuCanvasGO.SetActive(false);
 
         EventSystem.current.SetSelectedGameObject(_mainMenuFirst);
+    }
+
+    public void OpenInterMainMenu()
+    {
+        _mainMenuCanvasGO.SetActive(false);
+        _interMainMenuCanvasGO.SetActive(true);
+        _settingsMenuCanvasGO.SetActive(false);
+        _gamepadMenuCanvasGO.SetActive(false);
+        _keyboardMenuCanvasGO.SetActive(false);
+
+        EventSystem.current.SetSelectedGameObject(_mainMenuFirst);
+    }
+
+    public void OnInterPress()
+    {
+        OpenInterMainMenu();
     }
 
     public void OnStartGamePress()
@@ -68,6 +87,7 @@ public class MainMenuManager : MonoBehaviour
     private void OpenSettingsMenu()
     {
         _mainMenuCanvasGO.SetActive(false);
+        _interMainMenuCanvasGO.SetActive(false);
         _settingsMenuCanvasGO.SetActive(true);
         _gamepadMenuCanvasGO.SetActive(false);
         _keyboardMenuCanvasGO.SetActive(false);
@@ -93,6 +113,7 @@ public class MainMenuManager : MonoBehaviour
     private void OpenGamepadMenu()
     {
         _mainMenuCanvasGO.SetActive(false);
+        _interMainMenuCanvasGO.SetActive(false);
         _settingsMenuCanvasGO.SetActive(false);
         _gamepadMenuCanvasGO.SetActive(true);
         _keyboardMenuCanvasGO.SetActive(false);
@@ -108,6 +129,7 @@ public class MainMenuManager : MonoBehaviour
     private void OpenKeyboardMenu()
     {
         _mainMenuCanvasGO.SetActive(false);
+        _interMainMenuCanvasGO.SetActive(false);
         _settingsMenuCanvasGO.SetActive(false);
         _gamepadMenuCanvasGO.SetActive(false);
         _keyboardMenuCanvasGO.SetActive(true);
