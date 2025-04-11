@@ -18,7 +18,6 @@ public class CoinCollection : MonoBehaviour
             SoundFXManager.instance.PlaySoundFXClip(pickUpCoin, transform, 1f);
             Coin++;
             coinText.text = ": " + Coin.ToString();
-            Debug.Log(Coin);
             Destroy(other.gameObject);
         }
     }

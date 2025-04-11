@@ -11,6 +11,8 @@ public class FirePowerUp : MonoBehaviour
 
     [SerializeField] private GameObject _artToDisable = null;
 
+    [SerializeField] private AudioClip firePickUp;
+
     private Collider _collider;
 
     private void Awake()
@@ -33,6 +35,8 @@ public class FirePowerUp : MonoBehaviour
         _collider.enabled = false;
         _artToDisable.SetActive(false);
 
+        // sound
+        SoundFXManager.instance.PlaySoundFXClip(firePickUp, transform, 1f);
 
         ActivatePowerup(playerMovement);
         //wait to deactivate

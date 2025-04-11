@@ -16,6 +16,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private GameObject _gamepadMenuCanvasGO;
     [SerializeField] private GameObject _keyboardMenuCanvasGO;
     [SerializeField] public GameObject _respawnMenuCanvasGO;
+    [SerializeField] public GameObject _finishLevelMenuCanvasGO;
 
     //first button selected on open
     [SerializeField] private GameObject _mainMenuFirst;
@@ -23,6 +24,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private GameObject _gamepadMenuFirst;
     [SerializeField] private GameObject _keyboardMenuFirst;
     [SerializeField] public GameObject _respawnMenuFirst;
+    [SerializeField] public GameObject _finishLevelMenuCanvasFirst;
 
     private bool isPaused;
 
@@ -34,6 +36,7 @@ public class MenuManager : MonoBehaviour
         _gamepadMenuCanvasGO.SetActive(false);
         _keyboardMenuCanvasGO.SetActive(false);
         _respawnMenuCanvasGO.SetActive(false);
+        _finishLevelMenuCanvasGO.SetActive(false);
 
         playerMovementScript.enabled = true;
         cameraControllerScript.enabled = true;
@@ -83,6 +86,7 @@ public class MenuManager : MonoBehaviour
         _gamepadMenuCanvasGO.SetActive(false);
         _keyboardMenuCanvasGO.SetActive(false);
         _respawnMenuCanvasGO.SetActive(false);
+        _finishLevelMenuCanvasGO.SetActive(false);
 
         EventSystem.current.SetSelectedGameObject(_mainMenuFirst);
     }
@@ -94,6 +98,7 @@ public class MenuManager : MonoBehaviour
         _gamepadMenuCanvasGO.SetActive(false);
         _keyboardMenuCanvasGO.SetActive(false);
         _respawnMenuCanvasGO.SetActive(false);
+        _finishLevelMenuCanvasGO.SetActive(false);
 
         EventSystem.current.SetSelectedGameObject(null);
     }
@@ -110,6 +115,7 @@ public class MenuManager : MonoBehaviour
         _gamepadMenuCanvasGO.SetActive(false);
         _keyboardMenuCanvasGO.SetActive(false);
         _respawnMenuCanvasGO.SetActive(false);
+        _finishLevelMenuCanvasGO.SetActive(false);
 
         EventSystem.current.SetSelectedGameObject(_settingsMenuFirst);
     }
@@ -126,6 +132,7 @@ public class MenuManager : MonoBehaviour
         _gamepadMenuCanvasGO.SetActive(true);
         _keyboardMenuCanvasGO.SetActive(false);
         _respawnMenuCanvasGO.SetActive(false);
+        _finishLevelMenuCanvasGO.SetActive(false);
 
         EventSystem.current.SetSelectedGameObject(_gamepadMenuFirst);
     }
@@ -142,6 +149,7 @@ public class MenuManager : MonoBehaviour
         _gamepadMenuCanvasGO.SetActive(false);
         _keyboardMenuCanvasGO.SetActive(true);
         _respawnMenuCanvasGO.SetActive(false);
+        _finishLevelMenuCanvasGO.SetActive(false);
 
         EventSystem.current.SetSelectedGameObject(_keyboardMenuFirst);
     }

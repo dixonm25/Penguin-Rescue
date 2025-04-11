@@ -11,6 +11,8 @@ public class AirPowerUp : MonoBehaviour
 
     [SerializeField] private GameObject _artToDisable = null;
 
+    [SerializeField] private AudioClip airPickUp;
+
     private Collider _collider;
 
     private void Awake()
@@ -33,7 +35,10 @@ public class AirPowerUp : MonoBehaviour
         _collider.enabled = false;
         _artToDisable.SetActive(false);
 
-      
+        // sound
+        SoundFXManager.instance.PlaySoundFXClip(airPickUp, transform, 1f);
+
+
         ActivatePowerup(playerMovement);
         //wait to deactivate
         yield return new WaitForSeconds(_powerupDuration);
