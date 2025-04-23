@@ -94,10 +94,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] public ParticleSystem _airParticles;
     [SerializeField] public ParticleSystem _fireParticles;
 
-    [Header("Sounds")]
-    [SerializeField] private AudioClip walkSound;
-    [SerializeField] private AudioClip jumpFlapSound;
-
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
@@ -190,11 +186,6 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             animator.SetBool("IsMoving", false);
-        }
-
-        if (_input.MoveIsPressed & !_playerIsJumping & _playerIsGrounded)
-        {
-            SoundFXManager.instance.PlaySoundFXClip(walkSound, transform, 1f);
         }
 
         return new Vector3(_input.MoveInput.x, 0.0f, _input.MoveInput.y);
@@ -612,7 +603,6 @@ public class PlayerMovement : MonoBehaviour
         {
             _jumpTimeCounter -= Time.fixedDeltaTime;
             animator.SetBool("IsFalling", true);
-            SoundFXManager.instance.PlaySoundFXClip(jumpFlapSound, transform, 1f);
             animator.SetBool("IsGrounded", false);
         }
         else if (!_playerIsJumping && !_playerIsGrounded)

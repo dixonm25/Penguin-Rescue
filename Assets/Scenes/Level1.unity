@@ -1240,7 +1240,7 @@ MonoBehaviour:
   _speedIncreaseAmount: 25
   _powerupDuration: 5
   _artToDisable: {fileID: 600854852}
-  airPickUp: {fileID: 8300000, guid: 33eeddc080690a2438d649bed3b176ff, type: 3}
+  airPickUp: {fileID: 8300000, guid: 7123b92f0c040c745a14fa837469f7ab, type: 3}
 --- !u!65 &43775998
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -9583,6 +9583,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 917ab0ce52357294bad4ea475b2729ad, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1157132303}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 917ab0ce52357294bad4ea475b2729ad, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1157132304}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 917ab0ce52357294bad4ea475b2729ad, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1157132305}
   m_SourcePrefab: {fileID: 100100000, guid: 917ab0ce52357294bad4ea475b2729ad, type: 3}
 --- !u!1 &549600214 stripped
 GameObject:
@@ -23257,7 +23263,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 8f6621a2775502d439b7e228abb15ac7, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 
@@ -23265,6 +23271,33 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1157132304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1157132301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74dd98ada4da03b4b980821afd3fdca0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footsteps:
+  - {fileID: 8300000, guid: 5dd2e0257eb3b504e82dd614fecdd2a4, type: 3}
+--- !u!114 &1157132305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1157132301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca2ed3464671ba043a5c81068ea9f15e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flap: {fileID: 8300000, guid: 66b5e6533a3b8a14e9212be0b4f693e0, type: 3}
 --- !u!1 &1162387219
 GameObject:
   m_ObjectHideFlags: 0
@@ -35504,7 +35537,7 @@ MonoBehaviour:
   _slopeIncreaseAmount: 100
   _powerupDuration: 10
   _artToDisable: {fileID: 693728427}
-  firePickUp: {fileID: 8300000, guid: fa9a46fed7069e2448874b1973111c1d, type: 3}
+  firePickUp: {fileID: 8300000, guid: 18a081e6abd3c6448a342b959e916d53, type: 3}
 --- !u!65 &1678326041
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -36118,8 +36151,6 @@ MonoBehaviour:
   _airTrail: {fileID: 804159205}
   _airParticles: {fileID: 1585541737}
   _fireParticles: {fileID: 739390843}
-  walkSound: {fileID: 8300000, guid: e0993c9ac4b68b24cbc9ea48bec9f4e2, type: 3}
-  jumpFlapSound: {fileID: 8300000, guid: 6e1f13710b879d34bb99d92a400513e7, type: 3}
 --- !u!136 &1709577365
 CapsuleCollider:
   m_ObjectHideFlags: 0
