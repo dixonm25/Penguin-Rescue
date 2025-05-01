@@ -11,6 +11,8 @@ public class FinishLevel : MonoBehaviour
 
     public PlayerMovement playerMovementScript;
 
+    [SerializeField] public GameObject _finishLevelMenuCanvasFirst;
+
     [SerializeField] private Transform _player;
 
     private void OnTriggerEnter(Collider other)
@@ -25,6 +27,7 @@ public class FinishLevel : MonoBehaviour
     {
         playerMovementScript.enabled = false;
         menuManager._finishLevelMenuCanvasGO.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(_finishLevelMenuCanvasFirst);
     }
 
     public void OnNextLevelPress()

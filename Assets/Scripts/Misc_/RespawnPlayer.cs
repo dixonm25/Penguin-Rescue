@@ -13,8 +13,12 @@ public class RespawnPlayer : MonoBehaviour
 
     public PlayerMovement playerMovementScript;
 
+    [SerializeField] public GameObject _respawnMenuFirst;
+
     [SerializeField] private Transform _player;
     [SerializeField] private Transform _respawnPoint;
+
+    [SerializeField] private AudioClip loseSound;
 
 
     public float TimeLeft = 10f;
@@ -27,6 +31,7 @@ public class RespawnPlayer : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             WaitForCanvas();
+            SoundFXManager.instance.PlaySoundFXClip(loseSound, transform, 1f);
         }
     }
 
@@ -51,6 +56,7 @@ public class RespawnPlayer : MonoBehaviour
     private void WaitForCanvas()
     {
         playerMovementScript.enabled = false;
+        EventSystem.current.SetSelectedGameObject(_respawnMenuFirst);
         Invoke("OpenRespawnCanvas", waitForCanvasDelay);
     }
 
