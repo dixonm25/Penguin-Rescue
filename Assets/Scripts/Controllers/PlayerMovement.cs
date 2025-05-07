@@ -32,7 +32,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] public float _notGroundedMovementMultiplier = 1.25f;
     [SerializeField] float _rotationSpeedMultiplier = 180.0f;
     [SerializeField] float _pitchSpeedMultiplier = 180.0f;
-    [SerializeField] float _crouchSpeedMultiplier = 0.5f;
     [SerializeField] float _runMultiplier = 2.5f;
 
     [Header("Ground Check")]
@@ -107,9 +106,6 @@ public class PlayerMovement : MonoBehaviour
         _numberOfStepDetectRays = Mathf.RoundToInt(((_maxStepHeight * 100.0f) * 0.5f) + 1.0f);
         _rayIncrementAmount = _maxStepHeight / _numberOfStepDetectRays;
 
-        _playerFullHeight = _capsuleCollider.height;
-        _playerCrouchedHeight = _playerFullHeight - _crouchAmount;
-
         _rotationSpeedMultiplier = PlayerPrefs.GetFloat("currentSensitivity", 100);
         slider.value = _rotationSpeedMultiplier / 36;
 
@@ -134,7 +130,6 @@ public class PlayerMovement : MonoBehaviour
         _playerMoveInput = PlayerMove();
         _playerMoveInput = PlayerStairs();
         _playerMoveInput = PlayerSlope();
-        _playerMoveInput = PlayerCrouch();
         _playerMoveInput = PlayerRun();
 
         _playerMoveInput.y = PlayerFallGravity();
@@ -442,86 +437,10 @@ public class PlayerMovement : MonoBehaviour
         return calculatedPlayerMovement;
     }
 
-    private Vector3 PlayerCrouch()
-    {
-        Vector3 calculatedPlayerCrouchSpeed = _playerMoveInput;
-        if (_input.CrouchIsPressed)
-        {
-            Crouch();
-        }
-        else if (_playerIsCrouching)
-        {
-            Uncrouch();
-        }
-        if (_playerIsCrouching)
-        {
-            calculatedPlayerCrouchSpeed *= _crouchSpeedMultiplier;
-        }
-        return calculatedPlayerCrouchSpeed;
-    }
-
-    private void Crouch() 
-    {
-        if(_capsuleCollider.height >= _playerCrouchedHeight + _playerCrouchedHeightTolerance)
-        {
-            float time = Time.fixedDeltaTime * _crouchTimeMultiplier;
-            float amount = Mathf.Lerp(0.0f, _crouchAmount, time);
-
-            _capsuleCollider.height -= amount;
-            _capsuleCollider.center = new Vector3(_capsuleCollider.center.x, _capsuleCollider.center.y + (amount * 0.5f), _capsuleCollider.center.z);
-            _rigidbody.position = new Vector3(_rigidbody.position.x, _rigidbody.position.y - amount, _rigidbody.position.z);
-
-            _playerIsCrouching = true;
-        }
-        else
-        {
-            EnforceExactCharHeight();
-        }
-    }
-
-    private void Uncrouch()
-    {
-        if(_capsuleCollider.height < _playerFullHeight - _playerCrouchedHeightTolerance)
-        {
-            float sphereCastRadius = _capsuleCollider.radius * _headCheckRadiusMultiplier;
-            float headroomBufferDistance = 0.05f;
-            float sphereCastTravelDistance = (_capsuleCollider.bounds.extents.y + headroomBufferDistance) - sphereCastRadius;
-            if (!(Physics.SphereCast(_playerCenterPoint, sphereCastRadius, _rigidbody.transform.up, out _, sphereCastTravelDistance)))
-            {
-                float time = Time.fixedDeltaTime * _crouchTimeMultiplier;
-                float amount = Mathf.Lerp(0.0f, _crouchAmount, time);
-
-                _capsuleCollider.height += amount;
-                _capsuleCollider.center = new Vector3(_capsuleCollider.center.x, _capsuleCollider.center.y, _capsuleCollider.center.z);
-                _rigidbody.position = new Vector3(_rigidbody.position.x, _rigidbody.position.y + amount, _rigidbody.position.z);
-            }
-        }
-        else
-        {
-            _playerIsCrouching = false;
-            EnforceExactCharHeight();
-        }
-    }
-
-    private void EnforceExactCharHeight()
-    {
-        if (_playerIsCrouching)
-        {
-            _capsuleCollider.height = _playerCrouchedHeight;
-            _capsuleCollider.center = new Vector3(0.0f, _crouchAmount * 0.5f, 0.0f);
-        }
-        else
-        {
-            _capsuleCollider.height = _playerFullHeight;
-            _capsuleCollider.center = Vector3.zero;
-            _playerIsCrouching = false;
-        }
-    }
-
     private Vector3 PlayerRun()
     {
         Vector3 calculatedPlayerRunSpeed = _playerMoveInput;
-        if (_input.MoveIsPressed && _input.RunIsPressed && !_playerIsCrouching)
+        if (_input.MoveIsPressed && _input.RunIsPressed)
         {
             animator.SetBool("IsRunning", true);
             animator.SetBool("IsMoving", false);
