@@ -12,11 +12,17 @@ public class SettingsMenu : MonoBehaviour
 
     public Toggle fullScreenToggle;
 
+    public Toggle vsyncToggle;
+
     private int screenInt;
+
+    private int vsyncInt;
 
     Resolution[] resolutions;
 
     private bool isFullScreen = false;
+
+    private bool vsync = false;
 
     const string resName = "resolutionOption";
 
@@ -34,11 +40,23 @@ public class SettingsMenu : MonoBehaviour
             fullScreenToggle.isOn = false;
         }
 
-        resolutionDropdown.onValueChanged.AddListener(new UnityAction<int>(index =>
+        vsyncInt = PlayerPrefs.GetInt("vsyncTogState");
+
+        if (vsyncInt == 0)
         {
-            PlayerPrefs.SetInt(resName, resolutionDropdown.value);
-            PlayerPrefs.Save();
-        }));
+            vsyncToggle.isOn = false;
+        }
+        else
+        {
+            vsync = true;
+            vsyncToggle.isOn = true;
+        }
+
+            resolutionDropdown.onValueChanged.AddListener(new UnityAction<int>(index =>
+            {
+                PlayerPrefs.SetInt(resName, resolutionDropdown.value);
+                PlayerPrefs.Save();
+            }));
     }
 
     private void Start()
@@ -86,4 +104,20 @@ public class SettingsMenu : MonoBehaviour
             PlayerPrefs.SetInt("toggleState", 1);
         }
     }
+
+    public void SetVsync(bool vsync) 
+    {
+        if (vsync == true)
+        {
+            QualitySettings.vSyncCount = 1;
+            PlayerPrefs.SetInt("vsyncTogState", 1);
+        }
+        else
+        {
+            vsync = false;
+            QualitySettings.vSyncCount = 0;
+            PlayerPrefs.SetInt("vsyncTogState", 0);
+        }
+    }
+
 }
