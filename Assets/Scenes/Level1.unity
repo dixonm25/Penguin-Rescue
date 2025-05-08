@@ -37046,6 +37046,7 @@ MonoBehaviour:
   _airTrail: {fileID: 804159205}
   _airParticles: {fileID: 1585541737}
   _fireParticles: {fileID: 739390843}
+  _jumpParticles: {fileID: 1585541737}
 --- !u!136 &1709577365
 CapsuleCollider:
   m_ObjectHideFlags: 0

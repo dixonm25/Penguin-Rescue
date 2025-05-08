@@ -92,6 +92,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private TrailRenderer _airTrail;
     [SerializeField] public ParticleSystem _airParticles;
     [SerializeField] public ParticleSystem _fireParticles;
+    [SerializeField] public ParticleSystem _jumpParticles;
 
     private void Awake()
     {
@@ -112,6 +113,7 @@ public class PlayerMovement : MonoBehaviour
         _airTrail.enabled = false;
         _airParticles.Stop();
         _fireParticles.Stop();
+        _jumpParticles.Stop();
     }
 
     private void FixedUpdate()
@@ -598,5 +600,15 @@ public class PlayerMovement : MonoBehaviour
     public void SetFireTrail(bool activeState)
     {
         _fireParticles.Play();
+    }
+
+    public void SetJumpIncrease(float newJumpIncrease)
+    {
+        _initialJumpForceMultiplier += newJumpIncrease;
+    }
+
+    public void SetJumpTrail(bool activeState)
+    {
+        _jumpParticles.Play();
     }
 }
