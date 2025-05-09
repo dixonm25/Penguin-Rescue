@@ -40,6 +40,11 @@ public class FinishLevel : MonoBehaviour
         StartOverButton();
     }
 
+    public void OnSecondStartOverPress()
+    {
+        SecondStartOverButton();
+    }
+
     private void NextLevelButton()
     {
         SceneManager.LoadScene(1);
@@ -48,6 +53,11 @@ public class FinishLevel : MonoBehaviour
     private void StartOverButton()
     {
         SceneManager.LoadScene(2);
+    }
+
+    private void SecondStartOverButton()
+    {
+        SceneManager.LoadScene(1);
     }
 
     private void ExitGameButton()

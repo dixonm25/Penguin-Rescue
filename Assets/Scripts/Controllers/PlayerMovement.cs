@@ -79,13 +79,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] bool _jumpWasPressedLastFrame = false;
 
     [Header("Crouching")]
-    [SerializeField] bool _playerIsCrouching = false;
-    [SerializeField][Range(0.0f, 1.8f)] float _headCheckRadiusMultiplier = 0.9f;
-    [SerializeField] float _crouchTimeMultiplier = 10.0f;
-    [SerializeField] float _playerCrouchedHeightTolerance = 0.05f;
-    float _crouchAmount = 1.0f;
-    float _playerFullHeight = 0.0f;  // Note: Gets set in Awake()
-    float _playerCrouchedHeight = 0.0f; // Note: Gets set in Awake()
+
     Vector3 _playerCenterPoint = Vector3.zero;
 
     [Header("Power ups")]
