@@ -25540,7 +25540,7 @@ Transform:
   m_GameObject: {fileID: 817483343}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 488.1, y: 60.3, z: -329.4}
+  m_LocalPosition: {x: 493.7, y: 60.3, z: -329.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -36185,7 +36185,7 @@ GameObject:
   - component: {fileID: 1512647877}
   - component: {fileID: 1512647876}
   m_Layer: 0
-  m_Name: PenguinPablo
+  m_Name: PenguinPesto
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -36205,7 +36205,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _input: {fileID: 2123675305}
   _interactSprite: {fileID: 310277589}
-  dialogueText: {fileID: 11400000, guid: 0faddc49bb9a18348983cca576d7a205, type: 2}
+  dialogueText: {fileID: 11400000, guid: 555fa8442d31aa94ea00bb16e52c0b14, type: 2}
   dialogueController: {fileID: 1250935775}
 --- !u!135 &1512647877
 SphereCollider:
@@ -36236,15 +36236,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1512647875}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -250.01505, y: -118.9826, z: -30.430473}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -250.01505, y: -196.61, z: 998.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 116456746}
   - {fileID: 310277590}
   m_Father: {fileID: 1124236265}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1 &1517457255
 GameObject:
   m_ObjectHideFlags: 0
@@ -50417,7 +50417,7 @@ GameObject:
   - component: {fileID: 1998374923}
   - component: {fileID: 1998374922}
   m_Layer: 0
-  m_Name: PenguinCraig
+  m_Name: PenguinAlfredo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -50437,7 +50437,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _input: {fileID: 2123675305}
   _interactSprite: {fileID: 1637882464}
-  dialogueText: {fileID: 11400000, guid: 987e9cd64ed2eba41a1a6ffb175bf90c, type: 2}
+  dialogueText: {fileID: 11400000, guid: 64c4dd122bc9d1e4087bf8fd9c2aad43, type: 2}
   dialogueController: {fileID: 1250935775}
 --- !u!135 &1998374923
 SphereCollider:
@@ -50469,7 +50469,7 @@ Transform:
   m_GameObject: {fileID: 1998374921}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -331.21503, y: -53.47, z: 896.63}
+  m_LocalPosition: {x: -253.8, y: -266.41, z: 389.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -52824,7 +52824,7 @@ GameObject:
   - component: {fileID: 1841698338198280801}
   - component: {fileID: 1841698338198280800}
   m_Layer: 0
-  m_Name: PrincePenguin
+  m_Name: PrincePingu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -53227,15 +53227,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1352441418161586405}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -238.5, y: -141.83, z: 1436.42}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: -235.11, y: -204.77, z: 5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 780191474}
   - {fileID: 27285570}
   m_Father: {fileID: 1124236265}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!114 &1841698338198280800
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -53250,7 +53250,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _input: {fileID: 2123675305}
   _interactSprite: {fileID: 27285569}
-  dialogueText: {fileID: 11400000, guid: 9cfe9eaffa44af64f88a7b79494d3805, type: 2}
+  dialogueText: {fileID: 11400000, guid: e980b78a59c9e7245bb8785f845c0241, type: 2}
   dialogueController: {fileID: 1250935775}
 --- !u!135 &1841698338198280801
 SphereCollider:

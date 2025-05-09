@@ -37432,10 +37432,6 @@ MonoBehaviour:
   _jumpBufferTimeCounter: 0
   _playerIsJumping: 0
   _jumpWasPressedLastFrame: 0
-  _playerIsCrouching: 0
-  _headCheckRadiusMultiplier: 0.9
-  _crouchTimeMultiplier: 10
-  _playerCrouchedHeightTolerance: 0.05
   _airTrail: {fileID: 804159205}
   _airParticles: {fileID: 1585541737}
   _fireParticles: {fileID: 739390843}
@@ -44591,7 +44587,7 @@ GameObject:
   - component: {fileID: 1841698338198280801}
   - component: {fileID: 1841698338198280800}
   m_Layer: 0
-  m_Name: PrincePenguin
+  m_Name: PrincePep
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45467,7 +45463,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 1
+  m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -5495902117074765545, guid: a91c291947e915e4a9b3470f15d4c0ef, type: 3}
 --- !u!33 &3469287837627248994
