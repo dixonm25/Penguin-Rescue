@@ -28,6 +28,8 @@ public class CameraController : MonoBehaviour
     {
         _cinemachineFramingTransposer3rdPerson = cinemachine3rdPerson.GetCinemachineComponent<CinemachineFramingTransposer>();
         _cinemachineFramingTransposerOrbit = cinemachineOrbit.GetCinemachineComponent<CinemachineFramingTransposer>();
+
+        Cursor.lockState = CursorLockMode.Confined;
     }
 
     private void Start()
